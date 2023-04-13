@@ -1,189 +1,398 @@
-\chapter{列举环境}
-以下资料来自宏包说明和网络，翻译不一定正确：
-
-在LaTeX中有三种基本的列举(列表)环境，即enumerate(编号)、itemize(分条目)和description(描述)环境。调整latex的列表环境时，使用 enumitem 宏包可以方便的调整间距（注意区分包名和环境名）和自定义编号样式。
-
-\section{调整间距}
-三种基本环境无论哪一种，间距的调整都是一样的。调整间距的参数命令包括两类：垂直间距和水平间距。各种距离的定义如图\ref{enumitem}所示。下图的来源一直找不到，可能是旧版本的宏包说明，新版已经删掉了下面的注释了。
+\chapter{基于局部贝叶斯神经网络的医学视觉问答及其不确定性研究}
+贝叶斯神经网络的应用领域十分广泛，不但可以应用于传统的分类和回归任务的学习以及预测，还可以通过学习给定状态下行动的概率分布来学习强化学习问题中的最优策略，
+也可以通过将从一个任务中学到的后验分布作为另一个相关任务的先验分布从而将知识从一个任务转移到另一个任务实现迁移学习。最为特殊的是，贝叶斯神经网络可以用来估计
+模型预测的不确定性，这在一些具有极高不确定性量化需求的任务中具有十分重要的用途。
+%
+\section{贝叶斯神经网络}
+\subsection{贝叶斯神经网络简介}
+传统深度神经网络使用点估计作为权值，忽略了权值中的不确定性，往往会导致网络对自身决策“过度自信”\cite{shridhar2019comprehensive}。为了解决这个问题，Blundell等人\cite{blundell2015weight}受贝叶斯网络的启发提出了一种
+贝叶斯神经网络（BNN，Bayes neural network）模型。与传统神经网络不同的是，该BNN的权值是一个概率分布，从而在权值上引入了不确定性。通过权值不确定性来估计预测的不确定性。
+这些权值分布的后验参数通过贝叶斯反向传播算法（BBB）学习得到。如\ref{BNN}展示了BNN和传统神经网络的区别。
 \begin{figure}[htbp]
-	\centering
-	\includegraphics[scale=0.6]{Fig/enumitem1.png}
-	\caption{\label{enumitem}enumitem包对各种间距的定义}
+	% 图片居中（列居中对齐）
+	\centering	
+	% 包含当前路径下的Fig文件夹的图片文件
+	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter4/BNN.png}  %scale = 0.3
+	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+	\caption{\label{BNN}贝叶斯神经网络} 
 \end{figure}
 
-现先总结出所推荐的间距设置，无编号的：
-\begin{lstlisting}
-\begin{itemize}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=36pt, itemindent=0pt, labelsep=6pt, listparindent=24pt]
-	\item 第一项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
+相比传统神经网络，BNN具有明显优势。一方面，通过引入权值的概率分布，BNN可以看作是无数个神经网络的集成，这些集成模型的预测差异可以视为
+预测的不确定性。BNN基本原理也类似于Droppout方法\cite{gal2016dropout}，通过集成各个网络可以得到更可靠的预测。另一方面，研究证明，贝叶斯方法比最大似然估计更适合于小样本数据建模。
+在贝叶斯方法中，参数的后验分布是通过先验和似然的乘积获得的，因此贝叶斯方法可以通过先验分布将先验信息包含到模型中。在样本数据较少的情况
+下，先验分布可以在计算后验分布时发挥着重要作用，使得贝叶斯方法在小样本情况下仍然能够很好地收敛\cite{mcneish2016using}。因此，通过在权重上设置先验分布，
+可以实现对权重的正则化，从而降低网络在小样本训练下的过拟合风险\cite{welling2011bayesian}。
 
-	\item 第二项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	
-\end{itemize}
-\end{lstlisting}
-效果：
-\begin{itemize}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=36pt, itemindent=0pt, labelsep=6pt, listparindent=24pt]
-	\item 第一项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
+\subsection{局部BNN与全局BNN}
+局部使用贝叶斯神经网络（L-BNNs）和全局都使用贝叶斯神经网络（G-BNNs）是贝叶斯神经网络的两种不同的应用形式。局部使用贝叶斯神经网络通常是指仅在神经网络的某些层
+中使用贝叶斯神经网络，而其他层则采用传统的深度神经网络。这种方法不但可以预测该局部网络输出的不确定性，还可以帮助解决神经网络的过拟合问题，并提高神经网络的泛化能力。
+全局使用贝叶斯神经网络可以更好地建模模型的不确定性，并且在训练数据不足是仍然具有较好的预测性能。但是伴随着多次采样，全局BNN计算成本往往十分高昂，
+需要更长的训练时间和更多的算力资源，效率显著降低。并且在遇到具有较多层数的深度网络或者模块众多的复杂网络时，全局采用贝叶斯神经网络结构不但会增加训练难度，网络的可解释性也会进一步下降。
+\begin{table}
+	\caption{\label{bnn-bnnlr}BNN与全局BNN的区别}
+	\centering
+	\small % 调整表格字号
+	\begin{tabular}{c|ccccc}
+        \hline 网络结构 & 权重参数形式 & 不确定性估计范围 & 计算效率 & 计算成本 &实用性\\
+        \hline G-BNNs & 概率分布 & 全面 & 低 & 高 & 较差\\
+		L-BNNs & 确定值\&概率分布 & 局部 & 高 & 低 & 较好\\
+        \hline 
+        \end{tabular}
+\end{table}	
+由此，全局的贝叶斯神经网络结构更适合用在一些轻量网络从而获得网络的全局不确定性估计的能力，当涉及复杂的深度神经网络模型，使用局部的贝叶斯神经网络进行不确定估计可以
+在一定程度上替代对其进行全局估计。
 
-	\item 第二项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	
-\end{itemize}
+\section{用于视觉问答不确定估计的BNNs}
+\subsection{网络搭建}
+通常参考的是点估计神经网络中的感知机结构，将采用点估计的全连接层替换为BNN结构，通过计算输出的后验分布来预测分类结果以及不确定性。受Zhijie Deng等人\cite{deng2021libre}将局部BNN采样结构用于网络对抗攻击检测的启示，
+在Med-VQA问题中，由于与输入图像以及问题相关词向量在经过训练后会具有某种语义关联，低维空间上表现为具有较短的余弦距离。其输出的不确定性往往意味着输入也带有极大的不确定性，所以在语义空间中，
+不确定估计往往评估的是语义特征的区分度，高不置信情况下网络提取到的语义特征往往也是无空间关联的，所以
+\begin{figure}[htbp]
+	% 图片居中（列居中对齐）
+	\centering	
+	% 包含当前路径下的Fig文件夹的图片文件
+	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter4/bnn-sublayer.png}  %scale = 0.3
+	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+	\caption{\label{bnn-sublayer}用于局部不确定估计的BNN} 
+\end{figure}
+\subsection{先验分布和后验分布选择}
+BNN中先验分布和后验分布地选择往往直接影响模型的性能。先验的选择应该反映设计者对模型的认识以及对模型参数分布的事先预测，例如预测模型经过训练哪些参数更可能接近零，哪些参数可能是正数等等。
+先验分布应该尽量简单以避免过拟合，常用的分布有高斯分布或者拉普拉斯分布，针对实际问题，可以采用交叉验证或者网格搜索来评估不同的先验分布和后验分布，以选择最佳的组合。
 
-有编号的：
-\begin{lstlisting}
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=44pt, itemindent=0pt, labelsep=6pt, label=(\arabic*)]
-	\item 第一项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
+在一般情况下，Blundell等人\cite{blundell2015weight}建议将混合高斯分布（Mixture of Gaussian Distribution）作为权值的先验分布，该混合高斯由两个高斯密度按照比例混合而成，其中两个高斯密度的均值为0，但方差不一致。
+具体来说，该混合高斯先验分布的表达式为：
+\begin{equation}
+	\label{}
+	P(\mathrm{w})=\prod_j \pi N\left(w_j \mid 0, \sigma_1^2\right)+(1-\pi) N\left(w_j \mid 0, \sigma_2^2\right)
+\end{equation}
+其中$w_j$是网络中的第j个权值，$N\left(w_j \mid 0, \sigma_1^2\right)$是$w_j$处均值为$\mu$,标准差为$\sigma$的高斯密度。该种混合高斯的第一个混合成分的标准差要大于第二个成分的标准差（$\sigma_1 > \sigma_2$）,
+从而提供比普通高斯先验更重的尾部。第二个混合成分的标准差要远小于1，从而使得许多权值落在零附近。所有的先验参数在所有权值之间是相同的，这样可以避免要事先对这些权值进行先验优化。本文同样采用了这个混合高斯分布。其中，
+第一个混合成分的标准差$\sigma_1$设置成了0.1，第二个混合成分的标准差$\sigma_2$设置成了0.0001。比例权重系数$\pi$设置成了0.5。
+本文尝试了各种先验参数的组合并通过实验效果得出了这一最优化参数组合。尝试的先验有：$\sigma_1$（0.1、0.5），$\sigma_2$（0.001、0.0005和0.0001）以及$\pi$（0.25、0.5和0.75）虽然可以让先验分布参数跟随网络一起优化，
+但一般无法提升性能，反而容易导致训练收敛变得缓慢，陷入局部最小值从而导致交差的性能。因此将该先验分布的参数设置为超参数的形式。
 
-	\item 第二项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	
+在本文中，借鉴了Blundell等人\cite{blundell2015weight}的方法，将权值的变分后验分布设置为高斯分布的对角矩阵，其中的均值和标准差即为BNN需要优化的参数。相较于拥有相同网络结构的CNN，BCNN的需要优化的参数数量增加了一倍。
+
+
+\section{网络训练}
+\subsection{贝叶斯反向传播算法}
+贝叶斯反向传播算法是一种使用贝叶斯推断来进行神经网络训练的方法，与传统的反向传播算法相比，BBB不仅可以优化神经网络中的权重
+还可以通过计算权重的后验分布来考虑权重的不确定性。为了得到BNN每个权值的分布，需要在给定数据情况下计算权值的后验分布，即$P(w|D)$。
+然而，权值的后验分布形式往往十分复杂，其解析形式很难直接通过计算得到，因此提出了很多近似方法来对权值的后验分布进行逼近。其中，Hinton和VanCamp\cite{hinton1993keeping}以及Graves\cite{graves2011practical}提出
+通过变分近似来估计权值的真实后验分布。具体来说，为神经网络的每个权值设定一个易于处理的变分后验分布$q(w|\theta)$，其中$\theta$是变分参数。
+之后通过最小化$P(w|D)$和$q(w|\theta)$之间的Kullback-Leibler（KL）散度，从而使得变分后验分布不断逼近真实后验分布。获得
+变分后验分布之后，BNN的权值后验分布就可以替换为变分后验分布。$P(w|D)$和$q(w|\theta)$之间的KL散度公式为：
+\begin{equation}
+	\label{}
+	\begin{aligned}
+	\mathrm{KL}[q(\mathrm{w} \mid \theta) \| P(\mathrm{w} \mid D)] & =\int q(\mathrm{w} \mid \theta) \log \frac{q(\mathrm{w} \mid \theta)}{P(\mathrm{w} \mid D)} d \mathrm{w} \\
+	& =\int q(\mathrm{w} \mid \theta) \log \frac{q(\mathrm{w} \mid \theta) P(D)}{P(\mathrm{w}) P(D \mid \mathrm{w})} d \mathrm{w} \\
+	& =\int q(\mathrm{w} \mid \theta)\left[\log P(D)+\log \frac{q(\mathrm{w} \mid \theta)}{P(\mathrm{w})}-\log P(D \mid \mathrm{w})\right] d \mathrm{w} \\
+	& =\log P(D)+\mathrm{KL}[q(\mathrm{w} \mid \theta) \| P(\mathrm{w})]-\int P(\mathrm{w} \mid \theta) \log P(D \mid \mathrm{w}) d \mathrm{w}
+	\end{aligned}
+\end{equation}
+因此，可以得到：
+\begin{equation}
+	\label{}
+	\begin{aligned}
+	\log P(D)= & \mathrm{KL}[q(\mathrm{w} \mid \theta) \| P(\mathrm{w} \mid D)]-\operatorname{KL}[q(\mathrm{w} \mid \theta) \| P(\mathrm{w})] \\
+	& +\int q(\mathrm{w} \mid \theta) \log P(D \mid \mathrm{w}) d \mathrm{w}
+	\end{aligned}
+\end{equation}
+因为$log P(D)$是一个常数，为了最小化$mathrm{KL}[q(\mathrm{w} \mid \theta) \| P(\mathrm{w} \mid D)]$,需要最小化以下公式：
+\begin{equation}
+	\label{}
+	\mathcal{F}(D, \theta)=\mathrm{KL}[q(\mathrm{w} \mid \theta) \| P(\mathrm{w})]-\int q(\mathrm{w} \mid \theta) \log P(D \mid \mathrm{w}) d \mathrm{w}
+\end{equation}
+$mathcal{F}(D, \theta)$即为BNN的损失函数，通过最小化最小化$mathcal{F}(D, \theta)$即可获得变分后验参数$θ$。该损失函数称为变分自由能\cite{neal1998view,friston2007variational}
+或期望下限\cite{jaakkola2000bayesian}。$mathcal{F}(D, \theta)$的第一项被称为复杂损失项，他依赖于先验。第二项称为似然损失项，他依赖于数据$D$.由于损失函数$mathcal{F}(D, \theta)$
+是针对整个数据集的，但在神经网络中往往将数据集分成小批次进行训练。假设数据集$D$被分成M个大小相同的批次，那么对于每个批次$D_i$，复杂性损失
+项需要乘上加权值$1/M$，此时损失函数变为\cite{blundell2015weight}：
+\begin{equation}
+	\label{}
+	\mathcal{F}\left(D_i, \theta\right)=\frac{1}{M} \mathrm{KL}[q(\mathrm{w} \mid \theta) \| P(\mathrm{w})]-\int q(\mathrm{w} \mid \theta) \log P\left(D_i \mid \mathrm{w}\right) d \mathrm{w}
+\end{equation}
+
+这样，每个批次的损失之和$\sum_{i}\mathcal{F}\left(D_i, \theta\right)$等于$mathcal{F}(D, \theta)$。此外，Blundell等人\cite{blundell2015weight}还提出了另一种
+对复杂性损失项加权的方法：
+\begin{equation}
+	\label{}
+	\mathcal{F}\left(D_i, \theta\right)=\pi_i \mathrm{KL}[q(\mathrm{w} \mid \theta) \| P(\mathrm{w})]-\int q(\mathrm{w} \mid \theta) \log P\left(D_i \mid \mathrm{w}\right) d \mathrm{w}
+\end{equation}
+其中加权值$pi_i$为：
+\begin{equation}
+	\label{}
+	\pi_i = \frac{2^M-i}{2^M - 1}
+\end{equation}
+
+可见$\pi_i$随着训练过程而减小。这种训练模式对于网络的初始训练阶段特别有用，因为在刚开始的几个训练批次中，加权值$\pi_i$最大，
+因此复杂性损失占主要作用，此时权值的变化是比较轻微的。随着训练数据越来越多，$\pi_i$减小，此时数据对权值的更新的作用越来越来，
+而先验的作用越来越小。
+
+对于神经网络，精确的最小化$\mathcal{F}(D, \theta)$是不可行的，因此，Blundell等人\cite{blundell2015weight}提出了贝叶斯反向传播算法，通过神经网络
+中的梯度下降来求解变分参数$\theta$。首先，通过展开$\mathrm{KL}[q(\mathrm{w} \mid \theta) \| P(\mathrm{w} \mid D)]$这一项，
+$\mathcal{F}(D, \theta)$可以化解为：
+\begin{equation}
+	\label{kl_sandu}
+	\mathcal{F}(D, \theta)=\int q(\mathrm{w} \mid \theta)[\log q(\mathrm{w} \mid \theta)-\log P(\mathrm{w})-\log P(D \mid \mathrm{w})] d \mathrm{w}
+\end{equation}
+
+在\cite{}中，通过蒙特卡洛采样方法来近似以上期望，即：
+\begin{equation}
+	\label{mtkl_sample_methoes}
+	\mathcal{F}(D, \theta) \approx \sum_{i=1}^n \log q\left(\mathrm{w}^{(i)} \mid \theta\right)-\log P\left(\mathrm{w}^{(i)}\right)-\log P\left(D \mid \mathrm{w}^{(i)}\right)
+\end{equation}
+
+
+其中$\mathrm{w}^{(i)}$代表从变分后验$q(\mathrm{2}) \mid \theta$采样的第$i$个蒙特卡洛样本。在Blundell提出的方法中，变分后验分布被设置为
+协方差矩阵为对角矩阵的高斯分布。令$\mu$代表高斯分布的均值，$\sigma$代表高斯分布的标准差。因为$\sigma$总是非负的，为了保证这一条件
+将$\sigma$参数化为：
+\begin{equation}
+	\label{}
+	\sigma = \log (1+\exp(\rho))
+\end{equation}
+$\rho$称为标准差参数。此时变分后验参数$\theta=(\mu,\rho)$。由于从分布中采样是不可导的，这会导致神经网络无法进行反向传播。这一
+问题可以通过采用重参化\cite{kingma2013auto}技巧解决：
+\begin{equation}
+	\label{}
+	\mathrm{w}=\mu+\log (1+\exp (\rho)) * \epsilon, \quad \epsilon \sim N(0, I)
+\end{equation}
+其中$w$相当于变分分布中采样得到的权值，$\epsilon$是噪声变量，它从标准正态分布中采样得到。由于以上采样过程只涉及线性操作，因此该采样的过程是可导的。
+总的来说，BBB中的重参化技术将随机性从权重中移除，使其可以直接计算梯度。这使得BBB能够高效地进行反向传播，并且可以在大型的神经网络中使用。
+由此，可以推导出贝叶斯反向传播算法的过程\cite{blundell2015weight}：
+\begin{enumerate}
+	\item 从标准正态分布中采样噪声：
+	\begin{equation}
+		\label{}
+		\quad \epsilon \sim N(0, I)
+	\end{equation}
+	\item 从变分后验中采样权值：
+	\begin{equation}
+		\label{}
+		\mathrm{w}=\mu+\log (1+\exp (\rho)) * \epsilon
+	\end{equation}
+	\item 计算损失:
+	\begin{equation}
+		\label{}
+		f(\mathrm{w},\theta)= logq(\mathrm{w}\mid\theta)
+	\end{equation}
+	\item 计算损失关于均值的梯度：
+	\begin{equation}
+		\label{}
+		\Delta_\mu=\frac{\partial f(\mathrm{w}, \theta)}{\partial \mathrm{w}}+\frac{\partial f(\mathrm{w}, \theta)}{\partial \mu}
+	\end{equation}
+	\item 计算损失关于标准差参数的梯度：
+	\begin{equation}
+		\label{}
+		\Delta_\rho=\frac{\partial f(\mathrm{w}, \theta)}{\partial \mathrm{w}} \frac{\epsilon}{1+\exp (-\rho)}+\frac{\partial f(\mathrm{w}, \theta)}{\partial \rho}
+	\end{equation}
+	\item 更新变分参数：
+	\begin{equation}
+		\label{}
+		\begin{aligned}
+		& \mu \leftarrow \mu-\alpha \Delta_\mu \\
+		& \rho \leftarrow \rho-\alpha \Delta_\rho
+		\end{aligned}
+	\end{equation}
 \end{enumerate}
-\end{lstlisting}
-效果：
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=44pt, itemindent=0pt, labelsep=6pt, label=(\arabic*)]
-	\item 第一项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
+其中$\aleph$是学习率。以上步骤是一次蒙特卡洛采样训练过程。但为了更精准的估计公式\eqref{kl_sandu}的积分，在网络训练过程中往往会进行多次的
+蒙塔卡洛采样，计算出多个损失后再求平均。
 
-	\item 第二项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	
-\end{enumerate}
+\subsection{网络预测}
+通过贝叶斯反向传播算法可以使得权值的变分后验分布不断逼近真实后验。当网络训练完成之后，用得到的变分后验分布代替真实后验，之后便能够
+对数据进行预测。BNN对数据x的预测公式为：
+\begin{equation}
+	\label{}
+	\begin{aligned}
+	P(y \mid x, D) & =\int P(y \mid x, \mathrm{w}) P(\mathrm{w} \mid D) d \mathrm{w} \\
+	& =\int P(y \mid x, \mathrm{w}) q(\mathrm{w} \mid \theta) d \mathrm{w}
+	\end{aligned}
+\end{equation}
+其中$P(y|x,D)$是给定权值w时网络的预测输出。这一积分相当于是对无数个模型的预测进行平均。但是在整个w空间上进行积分一般
+是难以计算的，因此这项积分通常采用蒙特卡洛方法进行估计，此时BNN的预测公式为：
+\begin{equation}
+	\label{}
+	P(y \mid x, D) \approx \frac{1}{T} \sum_{t=1}^T P\left(y \mid x, w_t\right), \quad w_t \sim q(\mathrm{w} \mid \theta)
+\end{equation}
+其中$w_t$是从$q(\mathrm{w})\mid\theta$中采样得到的权值，采样的次数为T次，之后这T次预测的平均作为BNN的输出。这T个模型预测的
+差异可以视为预测的不确定性。可见BNN相当于多个模型的集成，这可以提高网络的泛化能力，减少过拟合的风险。
+%
+\subsection{模型复杂度分析}
 
-下面两节分别讨论参数设置规则。
-\subsection{垂直间距}
-摘抄宏包说明：
-\begin{itemize}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=36pt, itemindent=0pt, labelsep=6pt, listparindent=24pt]
-	\item topsep控制列表环境与上文之间的距离。第一项和前一段之间的空间。
+%
+\section{实验结果}
+\subsection{模型性能实验}
+贝叶斯在小样本分类下有着优异的性能，可以有效防止过拟合。以下是模型在两个不同量级数据集下将局部网络结构中替换成BNNs所取得的性能效果：
+\begin{figure}[htbp]
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter4/modal_bayes_medrad.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{modal_bayes_medrad}Med-RAD数据集性能} 	
+	\end{minipage}
+	% 图片居中（列居中对齐）
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter4/modal_bayes_slake.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{modal_bayes_slake}SLAKE数据集性能} 	
+	\end{minipage}	
+\end{figure}
+%
+% \begin{table}
+% 	\caption{\label{bnn-bnnlr}BNN与全局BNN的区别}
+% 	\centering
+% 	\small % 调整表格字号
+% 	\begin{tabular}{l|l|lll}
+% 		\hline Dataset & Methods & Open & Closed & ALL \\
+% 		\hline \multirow{2}{*}{Med-RAD} & Ours(no.bnns) & $65.4 \%$ & $77.6 \%$ & $72.7 \%$ \\
+% 		& Ours(add.bnns) & $56.4 \% \pm 1.5 \%$ & $73.9 \% \pm 1.1 \%$ & $66.7 \% \pm 1.8 \%$ \\
+% 		\hline \multirow{2}{*}{ SLAKE } & Ours(no.bnos) & $76.0 \%$ & $81.7 \%$ & $78.2 \%$ \\
+% 		& Ours(add.bnns) & $73.5 \% \pm 1.2 \%$ & $81.7 \% \pm 0.3 \%$ & $76.7 \% \pm 0.9 \%$ \\
+% 		\hline
+% 	\end{tabular}
+% \end{table}
+$$
+\begin{array}{l|l|lll}
+\hline \text { Dataset } & \text { Methods } & \text { Open } & \text { Closed } & \text { ALL } \\
+\hline \multirow{2}{*}{\text { Med-RAD }} & \text { Ours(no.bnns) } & 65.4 \% & 77.6 \% & 72.7 \% \\
+& \text { Ours(add.bnns) } & 56.4 \% \pm 1.5 \% & 73.9 \% \pm 1.1 \% & 66.7 \% \pm 1.8 \% \\
+\hline \multirow{2}{*}{\text { SLAKE }} & \text { Ours(no.bnns) } & 76.0 \% & 81.7 \% & 78.2 \% \\
+& \text { Ours(add.bnns) } & 73.5 \% \pm 1.2 \% & 81.7 \% \pm 0.3 \% & 76.7 \% \pm 0.9 \% \\
+\hline
+\end{array}
+$$
+通过上述图表可以发现，在更小的数据集上，加入贝叶斯分类器也仍然可以取得平均以上的性能，这说明贝叶斯分类器有防止模型过拟合的作用。
 
-	\item itemsep 条目之间的距离
+\section{讨论}
+\subsection{采样-不确定性实验}
+贝叶斯网络的不确定性预测其实本质也来自于多个模型集成的思想。经过对分布的采样获得多个模型预测结果的均值代表模型最终的预测，而方差则代表了其对于预测结果的不确定程度。
+方差越大，模型越不置信，而为了保证医学问答场景下的严谨和安全，医学问答模型能够获得对自身结果预测的不确定程度（讨论和softmax的区别）具有十分重要的意义。
 
-	\item parsep 条目里面段落之间的距离
- 
-	\item partopsep 条目与下面段落的距离。当环境开始一个新段落时，额外的空间被添加到 \textbackslash{}topsep。
-\end{itemize}
+由于贝叶斯神经网络是通过不断采样来获取网络中的不确定性信息的，所以采样频率与不确定性或许会存在某种关联：
+\begin{figure}[htbp]
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter4/sample10.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{modal_bayes_medrad}sample = 10} 	
+	\end{minipage}
+	% 图片居中（列居中对齐）
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter4/sample50.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{modal_bayes_slake}sample = 50} 	
+	\end{minipage}	
+\end{figure}
+\begin{figure}[htbp]
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter4/sample100.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{modal_bayes_medrad}sample = 100} 	
+	\end{minipage}
+	% 图片居中（列居中对齐）
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter4/sample500.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{modal_bayes_slake}sample = 500} 	
+	\end{minipage}	
+\end{figure}
+%
+\begin{table}
+	\caption{\label{sample_exm}不同采样率下问答结果的不确定性}
+	\centering
+	\small % 调整表格字号
+	\begin{tabular}{c|ccc}
+		\hline Dataset & 采样频率 & 不确定性的问答数/总问答数 & 回答预测分布的方差 \\
+		\hline \multirow{4}{*}{Med-RAD} & 10 & 0.21 & 2639.96 \\
+		& 25 & 0.25 & 2656.54 \\
+		& 50 & 0.30 & 2711.51 \\
+		& 100 & 0.31 & 2758.05 \\
+		\hline \multirow{4}{*}{Slake} & 10 & 0.21 & 355.00 \\
+		& 25 & 0.24 & 396.82 \\
+		& 50 & 0.29 & 401.05 \\
+		& 100 & 0.32 & 398.77 \\
+		\hline
+	\end{tabular}
+\end{table}
 
-论文中希望上述距离都为0pt，如：
-\begin{lstlisting}
-	\begin{itemize}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt]
-		\item 第一项。
-		\item 第二项
-		\item 第三项。
-	\end{itemize}
-\end{lstlisting}
-效果为：
-\begin{itemize}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt]
-	\item 第一项。
-	\item 第二项
-	\item 第三项。
-\end{itemize}
+\subsection{拒绝分类实验}
+从理论上来说，由于预测不确定是贝叶斯神经网络最突出的优点之一，预测不确定性越高，说明网络对预测结果的把握程度越低，所以对于不确定性过高的预测，网络往往可以通过拒绝分类的形式，即不给出分类结果，
+从而提高模型分类的准确性和可靠程度。在实际的医学问答等具有风险性的情景中，当面对具有高不确定的诊断场合时，医生也会拒绝给出确切的答复，并通过其他手段继续收集信息以降低不确定性后再给出确诊意见，
+从而防止漏诊、误诊以及误治等具有极大事故风险的情况出现。
 
-
-\subsection{水平间距}
-% 正文12pt
-水平间距调整比较复杂，对照宏包说明给出的图，下面内容参考了宏包原文和网络资料：
-\begin{itemize}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=36pt, itemindent=0pt, labelsep=6pt, listparindent=24pt]
-	\item 为页面的左边距）和该列表的左边距之间的空间。 必须是非负数。 它的值取决于表，则为页面的左边距）和该列表的左边距之间的空间。 必须是非负数。 它的值取决于列表级别。
-	\item rightmargin       列表环境右边的空白长度。类似于 \textbackslash{}leftmargin 但用于右边距。 它的值通常是 0pt。
-	\item labelsep       标号与列表第一项文本左侧的距离。标签框的末尾和第一项的文本之间的空间。 它的默认值为 0.5 em。
-	\item itemindent       条目的缩进距离。添加到项目第一行文本部分的水平缩进的额外缩进。 通过减去 labelsep 和 labelwidth 的值，相对于该参考点计算标签的起始位置。 它的值通常是 0pt。注：理解这个变量时，查看图\ref{enumitem}的顺序应该按照箭头从左到右，先leftmargin再itemindent，然后再labelsep，最后labelwidth。即箭头的起始点是基准点。若itemindent=0pt，则leftmargin-labelsep-编号长度的结果就是编号起始位置。
-	\item labelwidth       包含标签的框的标称宽度。 如果标签的自然宽度为 < labelwidth，则默认情况下，标签在宽度为 (labelwidth) 的框内右对齐排版。否则，使用自然宽度的框，这会导致该行上的文本缩进。 可以通过为 \textbackslash{}makelabel 命令提供定义来修改标签的排版方式。
-	\item listparindent       条目下面段落的缩进距离。除了以 litem 开头的段落之外，列表的每个段落的开头都有额外的缩进。 可以为负数，但通常为 0pt。
-\end{itemize}
-
-无编号的水平间距，给出两张方案
- 
-第一种：
-\begin{itemize}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=36pt, itemindent=0pt, labelsep=6pt, listparindent=24pt]
-	\item 第一项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-
-	% 第一项的第二段。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	\item 第二项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	
-\end{itemize}
-
-
-第二种：
-\begin{itemize}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=0pt, itemindent=36pt, labelsep=6pt, listparindent=24pt]
-	\item 第一项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-
-	% 第一项的第二段。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	\item 第二项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	
-\end{itemize}
-
-推荐第一种。
-
-有编号的水平间距，下面给出三种方案：
-注：labelsep是某一项文字和编号框的距离，一般就设为一个空格6pt，要使编号左侧缩进两格，itemindent-labelsep要等于编号长度。注意编号是右对齐，向左扩展的。
-
-第一种方案是整体右移两格，文字距离编号一个空格，然后第二行文字和第一行对齐：
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=44pt, itemindent=0pt, labelsep=6pt, label=(\arabic*)]
-	\item 第一项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-
-	% 第一项的第二段。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	\item 第二项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	
-\end{enumerate}
-
-第二种方案是和论文撰写规范的格式一样，注意不是论文撰写规范规定的格式，规范里没有规定这些格式。如：
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=0pt, itemindent=44pt, labelsep=6pt, listparindent=24pt, label=(\arabic*)]
-	\item 第一项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-
-	% 第一项的第二段。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	\item 第二项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	
-\end{enumerate}
-
-第三种方案是整体右移两格，文字距离编号一个空格，第二行文字不再右移：
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=24pt, itemindent=20pt, labelsep=6pt, listparindent=20pt, label=(\arabic*)]
-	\item 第一项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-
-	% 第一项的第二段。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	\item 第二项。内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容
-	
-\end{enumerate}
-
-推荐第一种。
-
-\section{enumerate标签样式}
-除上述小括号数字的编号方法外，还有斜体字母等。在使用enumerate的时候，label的问题就是使用计数的字符，是阿拉伯数字、罗马、中文、还是希腊字符的问题。
-
-\subsection{小括号阿拉伯数字}
-% 小括号阿拉伯数字，用 label=\arabic*)
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=0pt, itemindent=44pt, labelsep=6pt, listparindent=24pt, label=\arabic*)]
-	\item 第一项。
-
-	% 第一项的第二段。
-	\item 第二项
-	
-	% 第二项的第二段。
-	\item 第三项。
-	
-	% 第三项的第二段。
-\end{enumerate}
+为了验证拒绝分类这一想法的可行性，本文利用用于分类预测的BNNs探究拒绝不确定性高（≥50\%）的分类是否能够提高模型整体的准确率。在实验前，首先需要一种计算样本预测不确定性的方法。由于BNN的权值为
+变分的形式，所以其预测输出也是一种变分分布。Kwon等人\cite{kwon2020uncertainty}和Shridhar等人\cite{shridhar2018uncertainty}提出通过计算变分预测分布$q\left(y^* \mid x^*\right)$的方差来度量预测不确定性：
+\begin{equation}
+	\label{}
+	\begin{aligned}
+	\operatorname{Var}_{q\left(y^* \mid x^*\right)}\left(y^*\right) & =\int\left[\operatorname{diag}\left\{E_{p\left(y^* \mid x^*, w\right)}\left(y^*\right)\right\}-E_{p\left(y^* \mid x^*, w\right)}\left(y^*\right)^{\otimes 2}\right] q(w) d w \\
+	& +\int\left\{E_{p\left(y^* \mid x^*, w\right)}\left(y^*\right)-E_{q\left(y^* \mid x^*\right)}\left(y^*\right)\right\}^{\otimes 2} q(w) d w
+	\end{aligned}
+\end{equation}
+其中$v^{\otimes 2} = vv^{T}$,$x^{*}$和$y^{*}$分别是测试样本以及其预测输出，$p\left(y^* \mid x^*, w\right)$表示给定$w$下网络的预测，$q(w)$表示权值的变分分布，$diag(v)$是以向量v为对角线元素的
+对角矩阵。公式通常难以精确计算，但可以通过蒙特卡洛方法进行近似\cite{}：
+\begin{equation}
+	\label{}
+	\operatorname{Var}_{q\left(y^* \mid x^*\right)}\left(y^*\right)=\frac{1}{T} \sum_{t=1}^T \operatorname{diag}\left(\hat{p}_t\right)-\hat{p}_t \hat{p}_t^T+\frac{1}{T} \sum_{t=1}^T\left(\hat{p}_t-\bar{p}\right)\left(\hat{p}_t-\bar{p}\right)^T
+\end{equation}
+其中T为蒙特卡洛采样次数，$\hat{p}_t$代表第t次采样的网络输出的预测概率，而$\bar{p}$是所有$\hat{p}_t$的均值，即$\bar{p}=\sum_{t=1}^T \hat{p}_t / T$。在Kwon等人\cite{kwon2020uncertainty}的推导中，公式右边第一项为偶然不确定性，第二项为认知不确定性。
+偶然不确定性描述的观测数据中固有的噪声，因此也被称为数据不确定性。这是一项无法消除和避免的误差，即时收集更多的数据，也无法降低偶然不确定性。认知不确定性描述的训练模型中的不确定性，通常也被称之为模型不确定性。
+认知不确定性反映了模型缺乏模型知识。例如，对于来源于数据稀疏区域或者远离训练集的测试点，模型的认知不确定性就会显著增加\cite{kendall2017uncertainties}。通过收集更多的数据训练模型，可以减少认知不确定性。Shridhar等人\cite{shridhar2018uncertainty}的实验表明，分类准确性和认知不确定性之间呈
+负相关的关系，即分类准确性随着认知不确定性降低而提高。Shridhar等人\cite{shridhar2018uncertainty}还证明偶然不确定性取决于数据集而不是模型，同一个数据集在不同模型下具有相同的偶然不确定性。因此，本文将认知不确定性作为衡量预测不确定性高低的指标。
+本文设计的拒绝分类实验过程如下：测试时，首先对模型进行10次蒙特卡洛采样，计算所有样本的认知不确定性。之后讲所有版本按照认知不确定性的大小进行排序，并按照不同的拒绝比（例如$10\%$、$10\%$、$10\%$）将不确定性高的样本从舍弃，相当于BNNs拒绝对这些样本进行分类，之后重新计算拒绝分类后
+的准确率。
 
 
+表X显示了模型按不同比例拒绝高认知不确定样本后的问答准确率。当拒绝比例为$n \%$时，代表$n \%$认知不确定性值最高的样本被拒绝分类。可以看到，当网络拒绝分类部分预测不确定性高的样本之后，在开放式问答（Open）和封闭式问答（Close）上的回答准确率均有提升；
+可以看到，当以百分之50的拒绝比例拒绝高认知不确定性样本时，网络在Med-RAD、Slake这两个数据集上的总问答准确率分别提高到了69.8\%和82.1\%,接近甚至超越了在没有引入不确定估计时的模型的预测水平，在该数据集上也是一个相当高的准确率。
+且对于数据不确定性较高的小样本数据集Med-RAD，拒绝比例越大，准确率的增长率越大，提升幅度也越明显。以上结果说明，被拒绝分类的样本中大部分为容易分类错误的样本，同时也解释了拒绝分类可以升Med-VQA模型问答性能。
+\begin{table}
+	\caption{\label{reject_exm}拒绝分类实验}
+	\centering
+	\small % 调整表格字号
+	\begin{tabular}{c|c|ccccc}
+		\hline Dataset & 拒绝比例 & Open &  Close & Overall & Growth rate & U/A \\
+		\hline \multirow{4}{*}{Med-RAD} & 0 \%& 49.4 \%& 75.1 \%& 64.9 \%& X& 0.215 \\
+		& 10 \%& 49.4 \%& 76.2 \%& 65.7 \%& 1.2 \% & 0.197 \\
+		& 25 \%& 52.4 \%& 76.0 \%& 67.0 \%& 1.9 \% & 0.185 \\
+		& 50 \%& 52.1 \%& 80.3 \%& 69.8 \%& 4.1 \% & 0.121 \\
+		\hline \multirow{4}{*}{Slake} & 0 \%& 75.1 \%& 80.9 \%& 77.5 \%& X& 0.172 \\
+		& 10 \%& 78.3 \%& 81.7 \%& 79.6 \%& 2.7 \% & 0.145 \\
+		& 25 \%& 78.5 \%& 83.2 \%& 80.4 \%& 1.0 \% & 0.121 \\
+		& 50 \%& 80.2 \%& 85.0 \%& 82.1 \%& 2.1 \% & 0.081 \\
+		\hline
+	\end{tabular}
+\end{table}
 
-\subsection{斜体字母}
-% 斜体字母，用 label=\emph{\alph*}
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=0pt, itemindent=44pt, labelsep=6pt, listparindent=24pt, label=\emph{\alph*}.]
-	\item 第一项。
+综上所述，认知不确定性可以在一定程度上反映样本被错分类的可能性，认知不确定性高的样本中，错分类的样本占多数，说明模型对容易错分类的样本会具有较大的认知不确定性。因此，贝叶斯神经网络模型
+可以通过拒绝认知不确定性高的样本进行分类来提高模型的准确性，同时尽可能避免了错分类的产生，可以说BNNs的加入提高了整个医学视觉问答系统的性能和可靠性。
 
-	% 第一项的第二段。
-	\item 第二项
-	
-	% 第二项的第二段。
-	\item 第三项。
-	
-	% 第三项的第二段。
-\end{enumerate}
+\subsection{带不确定性估计的问答样例}
+\begin{figure}[htbp]
+	% 图片居中（列居中对齐）
+	\centering	
+	% 包含当前路径下的Fig文件夹的图片文件
+	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter4/qadamo.png}  %scale = 0.3
+	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+	\caption{\label{qademo}BNNs采样10次带不确定性问答样例} 
+\end{figure}
 
-\subsection{大写罗马字母}
-% 大写罗马字母，用 label=(\Roman*)
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=0pt, itemindent=44pt, labelsep=6pt, listparindent=24pt, label=(\Roman*)]
-	\item 第一项。
+\section{本章小结}
+本章首先介绍了贝叶斯神经网络的原理、结构以及该结构和不确定估计之间的关系，然后对网络中局部使用贝叶斯神经网络和全局使用贝叶斯神经网络进行了简单的阐述和定性分析，接着网络搭建部分，
+先后介绍了用于医学视觉问答网络中的BNNs结构以及BNN中先验和后验的选择依据和技巧，紧接着网络训练部分详解了用于BNN训练的贝叶斯反向传播算法以及网络如何进行输出和预测以及与不确定性的关系，介绍了模型的参数
+构成与复杂度。最后通过模型问答性能实验、采样与不确定性的关系实验和拒绝分类实验验证了BNNs相比传统点估计网络所具有的防止过拟合、获得预测分布以及不确定性以及通过拒绝分类的形式可以提升模型
+性能以及防止错分类等等优势。
 
-	% 第一项的第二段。
-	\item 第二项
-	
-	% 第二项的第二段。
-	\item 第三项。
-	
-	% 第三项的第二段。
-\end{enumerate}
+综上，本章验证了通过将贝叶斯神经网络引入具有风险性的医学视觉问答场景不但可以提高模型性能、提高模型在缺少数据样本时的鲁棒性和防止过拟合，还可以通过不确定估计和拒绝分类的形式，极大地提高了模型甚至
+医学视觉问答系统的可靠性，具备相当的实用价值。
+

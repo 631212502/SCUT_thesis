@@ -1,10 +1,17 @@
 \chapter{摘\texorpdfstring{\quad}{}要}
-	hallo world
+	医学视觉问答是计算机视觉和自然语言处理研究领域有着广泛研究的一项多模态挑战型任务。由于严重缺乏标记数据，现有方法普遍是采用迁移学习来获得有效的医学图像表示，存在一定的局限性。并且在图像-文本跨模态融合上采用的是传统的双塔模式，图像，文本特征在处理时完全分开，相互独立。
+	因此，本文引入对比学习预训练的方法并采用多个编码器混合的方式来获取更为有效的医学图像表示，同时引入了跨模态自注意力机制有选择性地捕获图像-文本的长期上下文联系，从而更有效地融合视觉和语言特征。此外，由于医学问题的安全敏感性，本文依据贝叶斯不确定性原理全新设计了推理模型，通过对预测结果的不确定度量保障了模型诊断结果的可靠性和安全性，同时也提高了模型的可解释性。
+	现有实验结果表明，该方法综合性能优于目前绝大部分主流方法，并在某些情况下取得SOTA水平。
+
 	本模板由Shun Xu\cite{_}以及yecfly\cite{_a}的模板修改而来，适合于华南理工大学硕/博士毕业论文。既然已经入坑LaTeX，就不推荐使用LYX，但本模板在修改祖传代码过程中仅对修改部分进行更新，其余部分仍保留源代码。另外参考文献管理软件推荐使用zotero，这也是本模板使用的软件。本模板最主要的改动是参考文献使用biber，而不是原来的bibtex，因此不再需要.bst文件。
 
 \keywordsCN{\LaTeX{}；论文}
 
 \chapter{Abstract}
+	Medical visual question answering (Med VQA) is a challenging multi-modal task that has received extensive research attention in the fields of computer vision and natural language processing. Due to the lack of labeled data, existing methods commonly employ transfer learning to obtain effective medical image representations, which are inherently limited. Moreover, the traditional two-tower architecture is used for cross-modal fusion, where the image and text features are processed separately and independently.
 	
+	Therefore, this paper introduces a contrastive learning pre-training method and adopts a mixture of multiple encoders to obtain more effective medical image representations. The paper also introduces a cross-modal self-attention mechanism to selectively capture the long-term contextual relationship between images and text, thereby more effectively fusing visual and language features. Additionally, due to the sensitive nature of medical problems, a new inference model is designed based on the Bayesian uncertainty principle, which ensures the reliability and safety of the model's diagnostic results by measuring the uncertainty of the prediction results and improves the model's interpretability.
+	
+	Existing experimental results show that this method has comprehensive performance superiority over most mainstream methods and achieves SOTA levels in some cases.
 
 \keywordsEN{\LaTeX{}; Paper}

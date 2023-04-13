@@ -1,0 +1,48 @@
+﻿@inproceedings{RN11,
+   author = {Eslami, Sedigheh and Melo, Gerard de and Meinel, Christoph},
+   title = {Does CLIP Benefit Visual Question Answering in the Medical Domain as Much as it Does in the General Domain?},
+   type = {Conference Proceedings}
+}
+
+@article{RN9,
+   author = {Gong, Haifan and Chen, Guanqi and Liu, Sishuo and Yu, Yizhou and arXiv, Guanbin Li %J Cornell University -},
+   title = {Cross-Modal Self-Attention with Multi-Task Pre-Training for Medical Visual Question Answering},
+   year = {2021},
+   type = {Journal Article}
+}
+
+@article{RN4,
+   author = {Kendall, Alex and Gal, Yarin and Vision, Roberto Cipolla %J arXiv: Computer and Recognition, Pattern},
+   title = {Multi-Task Learning Using Uncertainty to Weigh Losses for Scene Geometry and Semantics},
+   year = {2017},
+   type = {Journal Article}
+}
+
+@article{RN6,
+   author = {Kim, Jin-Hwa and Jun, Jaehyun and Vision, Byoung-Tak Zhang %J arXiv: Computer and Recognition, Pattern},
+   title = {Bilinear Attention Networks},
+   year = {2018},
+   type = {Journal Article}
+}
+
+@article{RN10,
+   author = {Lin, Zhihong and Zhang, Donghao and Tac, Qingyi and Shi, Danli and Haffari, Gholamreza and Wu, Qi and He, Mingguang and Vision, Zongyuan Ge %J arXiv: Computer and Recognition, Pattern},
+   title = {Medical Visual Question Answering: A Survey},
+   year = {2021},
+   type = {Journal Article}
+}
+
+@article{RN8,
+   author = {Liu, Bo and Zhan, Li-Ming and Xu, Li and Ma, Lin and Yang, Yan and Imaging, Xiao-Ming Wu %J International Symposium on Biomedical},
+   title = {Slake: A Semantically-Labeled Knowledge-Enhanced Dataset For Medical Visual Question Answering},
+   year = {2021},
+   type = {Journal Article}
+}
+
+@article{RN7,
+   author = {Nguyen, Binh and Do, Thanh-Toan and Nguyen, Binh X. and Do, Tuong and Tjiputra, Erman and Vision, Quang D. Tran %J arXiv: Computer and Recognition, Pattern},
+   title = {Overcoming Data Limitation in Medical Visual Question Answering},
+   year = {2019},
+   type = {Journal Article}
+}
+
