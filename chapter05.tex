@@ -21,7 +21,7 @@
 所以模态自适应技术可以在一个独立系统内将用于处理各个模态的轻量化模型进行高效集成，从而在保证各个子系统原本性能的同时，解放了输入数据的限制，提高了模型的泛化能力和交互体验。
 
 \subsection{设计原理}
-在多模型交互的场景下，可以基于规则、检索等传统方式选择合适的交互模型，但这种模型是固定的逻辑，存在泛化能力弱不具备自主调节能力等弊端。基于机器学习的模型可以根据用户或者系统的反馈，实现一个可自适应的对话模型控制器，可根据用户的输入和反馈将问题分类到
+在多模型交互的场景下，可以基于规则、检索等传统方式选择合适的交互模型，但这种模型是固定的逻辑，存在泛化能力弱不具备自主调节能力等弊端。如图\ref{comu_logit}基于机器学习方法搭建的模型控制器可以根据用户或者系统的反馈，实现一个可自适应的对话模型控制器，可根据用户的输入和反馈将问题分类到
 合适的模型中进行处理。而多模型的集成（例如投票、加权）也可以提高系统的准确性和鲁棒性，以及根据用户的反馈，不断对模型进行调整和优化，以提高对话系统的性能和用户体验。
 
 \begin{figure}[htbp]
@@ -37,7 +37,7 @@
 面对复杂抽象的输入，只要获得正确的反馈并加以迭代，模型也能够对其进行识别和适应。
 
 \subsection{算法评估}
-基于现有的医学问答场景问答诉求，主要的图像输入为放射学图像以及病理学图像，故综合对比了目前常见的机器学习图像分类算法以及系统响应性能，准确率高，
+基于现有的医学问答场景问答诉求，主要的图像输入如\ref{mri,xray,ct,path}为放射学图像以及病理学图像，故综合对比了目前常见的机器学习图像分类算法以及系统响应性能，准确率高，
 系统响应快，具有实时调整能力的机器学习算法模型往往是使用在即时对话系统中进行模型控制的较好选择。为了较好的初始化这个自适应模型，选用了Med-RAD中的所有放射学图像315张以及
 Path数据集中的前315张病理学图像，总计630张组成一个新的数据集并按8:2的比例划分训练集和测试集，其所在的数据集作为每张图片的分类标签，选用不同的分类模型进行分类。
 \begin{figure}[htbp]
@@ -46,7 +46,7 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
 		% 包含当前路径下的Fig文件夹的图片文件
 		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/data_radmri.jpg}  %scale = 0.3
 		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-		\caption{\label{close_confusionmatrix}头部MRI放射学影像} 	
+		\caption{\label{mri}头部MRI放射学影像} 	
 	\end{minipage}
 	% 图片居中（列居中对齐）
 	\begin{minipage}{0.5\linewidth}
@@ -54,25 +54,25 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
 		% 包含当前路径下的Fig文件夹的图片文件
 		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/data_radXray.jpg}  %scale = 0.3
 		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-		\caption{\label{open_confusionmatrix}胸部X-ray放射学影像} 	
+		\caption{\label{xray}胸部X-ray放射学影像} 	
 	\end{minipage}	
     \begin{minipage}{0.5\linewidth}
 		\centering	
 		% 包含当前路径下的Fig文件夹的图片文件
 		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/data_radct.jpg}  %scale = 0.3
 		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-		\caption{\label{open_confusionmatrix}胸部CT放射学影像} 	
+		\caption{\label{ct}胸部CT放射学影像} 	
 	\end{minipage}
     \begin{minipage}{0.5\linewidth}
 		\centering	
 		% 包含当前路径下的Fig文件夹的图片文件
 		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/data_path.jpg}  %scale = 0.3
 		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-		\caption{\label{open_confusionmatrix}病理学影像} 	
+		\caption{\label{path}病理学影像} 	
 	\end{minipage}
 \end{figure}
 
-最终在测试集上的表现如表如表\ref{tab:ML_compare}。
+最终在测试集上的表现如表\ref{tab:ML_compare}。
 \begin{table}
 	\caption{\label{tab:ML_compare}不同机器学习算法的性能评估对比}
 	\centering
@@ -91,12 +91,15 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
 经过对比，随机森林算法具有最好的准确率、精确率和F1值，且在此类无正负例倾向的分类场景中，准确率和F1分数为最主要的参考指标，且随机森林方法在防止过拟合、鲁棒性和可解释性上相比其他算法君有一定的优势\cite{}，
 故而选择随机森林算法作为模型自适应控制的学习算法。
 
+\subsection{分析}
+综上所述，该模态自适应系统设计可以自适应地在不同医学影像输入间进行转换和交互。它可以使得机器学习模型能够在多种输入模态下进行训练和推断，从而提高了模型的鲁棒性和实用性。但同时，
+这个系统本身也存在一定的不足之处。例如，接受反馈以及模型调整存在明显的滞后效应，单个用户往往不会询问一个问题多次。其次就是反馈的数据并不能直接用于训练，还需要专业的医生进行筛选甄别，
+这无形中会增大其成本。并且要想达到很好的跨模态效果，还需要大量相关数据的支持，这也是医学领域所匮乏的。
+
 \section{云端在线系统设计}
 \subsection{功能性需求分析}
 一个视觉问答系统的核心功能是协助用户完成相关的视觉问答任务，通常包括系统管理、信息处理、问答模型三个部分。系统管理主要负责系统日志控制，系统内外部的信息通信；信息处理负责对系统输入
-的图像或者文本信息以及数据流进行预处理，转换成问答模型所需要的信息格式；问答模型是本系统的核心模块，包括模型控制、模型问答两部分。系统的总体
-
-功能需求如图所示：
+的图像或者文本信息以及数据流进行预处理，转换成问答模型所需要的信息格式；问答模型是本系统的核心模块，包括模型控制、模型问答两部分。系统的总体功能需求如图\ref{sys_need}。
 \begin{figure}[htbp]
 	% 图片居中（列居中对齐）
 	\centering	
@@ -108,7 +111,10 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
 
 视觉问答系统中的主要角色包括用户和视觉问答模型，以下通过图例来描述他们所涉及的各个功能模块。
 \begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=44pt, itemindent=0pt, labelsep=6pt, label=(\arabic*)]
-    \item 用户
+    \item 用户用例\ref{eg_user}：对于使用本系统的用户，系统主要负责处理用户的信息采集以及问答请求，其中信息采集包括用户上传的医学影像图片以及相对应的问题，其中这两个输入都要做到良好的兼容性，
+    图像采集需做到兼容常见的图像格式和资源形式，例如兼容png、jpg等格式的图片以及用户采用的是本地上传或者是网络资源定位符url的方式提供图像信息。问题文本采集
+	应充分考虑语种，语言类型的差异，对不同语种问题的输入，接口需具备基础的翻译能力。同时在处理问答请求是要区分是控制请求还是服务请求，控制请求分为API调用或者前端调用
+	两种不同的服务请求，确认后系统才能够提供准确的返回形式。服务请求则需要系统调用视觉问答模型对问题输入进行回复，为用户提供服务。
     \begin{figure}[htbp]
         % 图片居中（列居中对齐）
         \centering	
@@ -117,7 +123,8 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
         % 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
         \caption{\label{eg_user}用户用例} 
     \end{figure}
-    \item 视觉问答模型
+    \item 模型用例如\ref{eg_model}：对于搭载在系统上视觉问答模型，系统主要通过各种接口为其实现机器翻译，答案返回（云端下发）以及样本收集等功能。在面对非英语输入时，系统需要调用翻译组件进行翻译，最后交由模型进行问答，
+    当模型返回答案预测时，系统会将其整理成带标签的字典，并打包成JSON信息下发给用户。在面对需要收集的样本时，系统先将数据按样本和标签进行分类整理，并调用本地OS将其保存在数据文件夹或者数据库文件中。
     \begin{figure}[htbp]
         % 图片居中（列居中对齐）
         \centering	
@@ -163,17 +170,25 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
 后端服务器：后端服务可以采用单机部署，为了提高服务的效率和稳定性，往往也采用多机部署的方式。主要包括系统管理模块、信息处理模块
 视觉问答模块。系统管理模块提供用户注册登录等接口，信息处理模块提供视觉问答数据需要的转化接口，视觉问答模块则搭载了主要的视觉问答模型，接收数据并预测结果返回。
 
-\subsection{数据工作流}
-如下图所示，医学视觉问答系统的数据工作流主要包含了用户请求、问答信息、问答记录三个部分。要实现分别记录不同用户的问答信息并保存在文件中作为数据反馈，需要一个高效的
+\subsection{工作数据流}
+如图\ref{data_string}所示，为了更好地理解整个架构和数据流转方式，设计的模态自适应医学视觉问答系统的数据工作流主要包含了用户请求、问答信息、问答记录三个部分。要实现分别记录不同用户的问答信息并保存在文件中作为数据反馈，需要一个高效的
 数据工作流处理方式。
+\begin{figure}[htbp]
+	% 图片居中（列居中对齐）
+	\centering	
+	% 包含当前路径下的Fig文件夹的图片文件
+	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/data_string.png}  %scale = 0.3
+	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+	\caption{\label{data_string}工作数据流图示} 
+\end{figure}
+用户数据是系统接口收集到的用户信息和登录信息，问答记录数据记录了和用户的交互以及反馈信息，包含三种ID数据和三类问答数据，一个用户包含了许多的问答记录，所以是1 to n的关系。问答文件是问答记录的实际载体，一个问答文件对应一次问答记录，以便于在系统中进行数据整理。
 \subsection{后端API服务接口设计}
 设计一个合理的API接口往往包含了开发语言和框架的选择、输入输出参数和格式的确定、编写接口功能、部署服务、测试、文档化、发布等过程。
 
-服务器端主要通过HTTP/HTTPS协议为客户端提供问答接口。其中信息处理模块集成在了接口上，接口的通信格式为json，通信内容如下表：
+服务器端主要通过HTTP/HTTPS协议为客户端提供视觉问答接口。其中信息处理模块集成在了接口上，接口的通信格式为json，通信内容如表\ref{tab:sys_api}。
 \begin{table}
     \caption{\label{tab:sys_api}后端API接口通信格式}
     \centering
-    \small
     \begin{tabular}{lll}
         \hline 字段名 & 类型 & 描述  \\
         \hline code & int & 状态码  \\
@@ -182,19 +197,31 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
         \hline
         \end{tabular}
 \end{table}	
+视觉问答接口是实现系统问答和提供服务的核心，在内部调用了各个算法服务，包括视觉问答算法服务，模型请求和信息处理中的各种算法。客户端通过HTTP经代理发送请求给后端服务器，
+并携带想要提问的图像和文本问题，后端服务器将最终的回答返回给客户端。
+
 \section{详细设计与实现}
 \subsection{系统架构}
-要搭建实现一个在线医学视觉问答系统，并保证其服务的稳定性、可靠性、闭环性以及安全性，需要一个较好的集成化设计，框架分用户层、代理层、服务层、数据层进行了设计。如下图：
+如表\ref{tab:sys_lib},要搭建实现一个在线医学视觉问答系统，并保证其服务的稳定性、可靠性、闭环性以及安全性，需要一个较好的集成化设计，框架分用户层、代理层、服务层、数据层进行了设计。
+
 \begin{table}
     \caption{\label{tab:sys_lib}主要使用的服务框架}
     \centering
-    \small
     \begin{tabular}{llll}
         \hline 用户层 & 代理层 & 服务层 & 数据层 \\
         \hline Gradio & Coplar & Docker & Flask \\
         \hline
         \end{tabular}
 \end{table}	
+\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=44pt, itemindent=0pt, labelsep=6pt, label=(\arabic*)]
+	\item Gradio是一个基于Web的交互式界面构建框架，可以用于构建机器学习模型的演示和应用。使用Gradio可以将模型部署为具有自定义用户界面的Web应用程序。
+	\item Coplar框架是一个用于提供内网穿透服务的应用框架，用于解决在内网环境下的外部访问问题，例如在企业内部网络中，往往存在一些需要从外网访问的资源，例如Web服务、数据库等，但这些资源由于被部署在内网中，因此无法直接通过公网IP进行访问。
+	Coplar内网穿透服务可以将内网资源映射到公网上，从而实现对内网资源的远程访问。
+	\item Docker是一种容器化平台和服务,可以帮助开发人员和系统管理员在虚拟化环境中轻松地构建、部署和运行应用程序。Docker容器还提供了一个隔离环境，使得应用程序可以在一个独立的运行环境中运行，不受其他应用程序或系统资源的影响。
+	\item Flask框架的核心是一个WSGI(Web Server Gateway Interface)应用程序，其实现非常简单，一般只有几个Python文件，其中包括了应用程序、路由、视图函数、模板、静态文件等。Flask通过装饰器机制实现路由映射，使开发人员可以通过定义路由和视图函数的方式，轻松地实现各种HTTP请求的响应处理。
+	有利于收集用户数据，建立数据库和服务之间的快速通路。
+\end{enumerate}
+
 \subsection{系统管理}
 系统管理主要是在数据以及通信层管理包括控制模型调用、访问控制、日志记录等系统功能。并通过编程和逻辑设计解决一系列部署中会遇到的问题。例如如何调配资源和模型对处理访问申请，如何在用户
 访问过程中进行并行的日志记录，如何监控异常行为，返回错误信息等。
@@ -205,13 +232,12 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
 \begin{table}
     \caption{\label{tab:linkvqa}接口信息处理}
     \centering
-    \small
     \begin{tabular}{l|l}
         \hline 信息内容 & 接口信息处理操作 \\
         \hline \multirow{3}*{图像操作} & 按84×84进行裁剪（AE） \\
 		& 按128×128进行裁剪（MAML） \\
 		& 按250×250进行裁剪 (CLIP) \\
-		\hline \multirow{2}*{文本文本} & 语种识别（langdetect） \\
+		\hline \multirow{2}*{文本操作} & 语种识别（langdetect） \\
 		& 语言翻译（API） \\
         \hline
         \end{tabular}
@@ -224,7 +250,6 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
 \begin{table}
     \caption{\label{tab:linkvqa}视觉问答接口}
     \centering
-    \small
     \begin{tabular}{l|l}
         \hline 接口名 & 视觉问答 \\
         \hline 请求协议 & HTTP\textbackslash HTTPS \\
@@ -240,31 +265,66 @@ Path数据集中的前315张病理学图像，总计630张组成一个新的数�
 在前端的编写使用中最注重的就是可视化。Gradio是一个轻量级的工具，主要用于快速编写可视化的Demo，搭建模型的Demo并部署深度学习模型。但其本身并不具备模型管理功能，必须采用其他的方式管理模型。
 因而后端为了与前端有更好的区分，采用了Flask框架编写。
 
-如图\ref{sys_demo},前端页面设计采用了VQA—Demo最常用的双流输入-输出的方式，也就是一侧负责模型输入，一侧负责模型输出。这种设计更具有和模型对话的效果，可以提高用户的交互体验。
-同时，为了更方便用户进行体验，Demo还设置了三类输入样例、8组对话样例，用户在进入界面后可以直接上手使用。
+如图\ref{demo_input}和图\ref{demo_output},前端页面设计采用了VQA—Demo最常用的双流输入-输出的方式，也就是一侧负责模型输入，一侧负责模型输出。这种设计更具有和模型对话的效果，可以提高用户的交互体验。
+\begin{figure}[htbp]
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/demo_input.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{demo_input}Demo输入栏} 	
+	\end{minipage}
+	% 图片居中（列居中对齐）
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/demo_output2.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{demo_output}Demo输出栏} 
+	\end{minipage}
+\end{figure}
+
+如\ref{demo_feedback},为了更好地收集用户反馈，在输入栏下方设计了反馈栏，这样便于用户同时将反馈信息输入给模型。此外，如图\ref{demo_example}为了更方便用户进行体验，Demo还在最后设置了三类输入样例、8组对话样例，用户在进入界面后可以直接上手使用。
+\begin{figure}[htbp]
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/demo_feedback.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{demo_feedback}Demo反馈栏} 	
+	\end{minipage}
+	% 图片居中（列居中对齐）
+	\begin{minipage}{0.5\linewidth}
+		\centering	
+		% 包含当前路径下的Fig文件夹的图片文件
+		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/demo_example.png}  %scale = 0.3
+		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+		\caption{\label{demo_example}Demo样例栏} 
+	\end{minipage}
+\end{figure}
+
+\section{系统接口测试}
+本小节使用最常见的接口测试工具Postman来测试问答接口，测试时请求需要携带的参数为图像信息和问题文本，请求遵守使用HTTP协议，请求方式为POST，测试URL路径为/post，请求格式JSON例子如图\ref{post}。测试的返回结果为文本。
+经过测试返回结果如图\ref{get}，从图中可以看出，本次测试成功从接口中获得了预期结果的返回，返回的json数据中的data字段包含了模型回答、模型不确定性预测、结果方差以及不确定标签评估。
 \begin{figure}[htbp]
 	% 图片居中（列居中对齐）
 	\centering	
 	% 包含当前路径下的Fig文件夹的图片文件
-	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/sys_demo.png}  %scale = 0.3
+	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/post.png}  %scale = 0.3
 	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-	\caption{\label{sys_demo}模型Demo前端交互界面} 
+	\caption{\label{post}向API发送请求} 
 \end{figure}
 
-\section{系统测试}
-\subsection{问答接口测试}
-本小节使用最常见的接口测试工具Postman来测试问答接口，测试时请求需要携带的参数为图像的url地址和问题文本，请求遵守使用HTTP协议，请求方式为POST，测试URL路径为/post，请求格式为JSON。测试的返回结果为文本。
-经过测试结果如图，从图中可以看出，本次测试成功从接口中获得了预期结果的返回，返回的json数据中的data字段包含了模型回答、模型不确定性预测、结果方差以及不确定标签评估。
 \begin{figure}[htbp]
 	% 图片居中（列居中对齐）
 	\centering	
 	% 包含当前路径下的Fig文件夹的图片文件
-	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/sys_apitest2.jpg}  %scale = 0.3
+	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter5/post_get.png}  %scale = 0.3
 	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-	\caption{\label{sys_apitest}API接口测试} 
+	\caption{\label{get}获得API返回数据} 
 \end{figure}
 
-\section{讨论与总结}
+\section{本章小结}
 本章首先介绍了模态自适应系统的技术路线和设计原理，接着针对目前场景在评估了各个经典机器学习算法的性能，并选用最优的算法作为
 控制交互模型的自适应方法，紧接着又介绍了云端在线系统的设计过程，从分析用户功能需求的角度确定系统需要实现的服务目标并以此设计出
 在线系统框架，从而设计数据工作流和相应后端服务支持。然后分别从系统架构、系统管理、信息处理、视觉问答以及前端页面五个部分介绍了从

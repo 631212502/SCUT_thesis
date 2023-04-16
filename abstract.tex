@@ -1,17 +1,39 @@
 \chapter{摘\texorpdfstring{\quad}{}要}
-	医学视觉问答是计算机视觉和自然语言处理研究领域有着广泛研究的一项多模态挑战型任务。由于严重缺乏标记数据，现有方法普遍是采用迁移学习来获得有效的医学图像表示，存在一定的局限性。并且在图像-文本跨模态融合上采用的是传统的双塔模式，图像，文本特征在处理时完全分开，相互独立。
-	因此，本文引入对比学习预训练的方法并采用多个编码器混合的方式来获取更为有效的医学图像表示，同时引入了跨模态自注意力机制有选择性地捕获图像-文本的长期上下文联系，从而更有效地融合视觉和语言特征。此外，由于医学问题的安全敏感性，本文依据贝叶斯不确定性原理全新设计了推理模型，通过对预测结果的不确定度量保障了模型诊断结果的可靠性和安全性，同时也提高了模型的可解释性。
-	现有实验结果表明，该方法综合性能优于目前绝大部分主流方法，并在某些情况下取得SOTA水平。
+	视觉问答（Visual Question Answering，VQA）指的是用户给定一张图片，计算机理解并回答与该图片相关的自然语言问题这样一种人机交互方式，它结合了计算机视觉和自然语言处理等领域的研究，是一个经典的多模态问题。
+	同时VQA依据使用场景可以划分成众多门类的应用，其中医学视觉问答技术(Medical Visual Question Answering，Med-VQA)旨在让计算机从医学影像中获取信息并回答使用者提出的医学问题，从而为医护人员和患者提供优质便捷高效的医疗咨询服务。
+	然而由于医学数据样本的匮乏、医学图像和文本之间存在巨大的语义鸿沟以及医疗卫生领域的科技应用往往伴随着十分高的风险，Med-VQA在现实世界中的应用面临着诸多挑战。鉴于现有方案都无法很好地解决这些问题，对此本文进行了如下研究：
+	\begin{enumerate}
+		\item 相比于丰富的自然图像问答数据集，Med-VQA目前存在着重大的数据缺陷，如无法通过机器生成、具有高昂的人工标注成本、医学图像噪声大和有用信息占比低等问题。同时与VQA模型相比，现有的Med-VQA模型在医学图像特征提取以及关联语义建模上仍有较大差距。
+		现有Med-VQA方法提取到的图像特征十分有限，同时也难以和更细粒度的语义特征相关联。针对这些问题，本文基于混合视觉增强技术提出了一种多编码器混合自注意网络（MEMSA）用于Med-VQA研究。
+		该网络首先引入了多个编码器来提取不同方面的图像特征，以实现图像降噪以及提高小样本下的特征丰富度。同时设计了一种跨模态自注意力机制用于特征融合和上下文关联性语义建模，以获得更细粒、更准确和更全面的语义特征表示。
+		\item 现有的Med-VQA模型采用的是点估计的形式来进行答案预测，不具备输出答案不确定性的能力。但“过于自信”的回答在医学领域是一个具有高风险性的行为，为避免医疗事故的发生，需要采取与之相应规避方法和措施。为此，本文在MEMSA和
+		贝叶斯神经网络的基础上，提出了一种贝叶斯分类器（BMLP）用于输出Med-VQA模型在预测时的不确定性。BMLP使得MEMSA网络能够准确地回答医学图像相关问题的同时，还能输出其答案的不确定性。同时，本文也对Med-VQA中的不确定性估计开展了采样分析实验和拒绝分类实验，
+		论述了不确定性的由来以及阐释了拒绝分类方法如何用于减小和防范医学问答预测时所出现的不确定性。
+		\item 在上述模型的基础上，针对目前Med-VQA落地难这一问题，结合模态自适应、云计算等技术，设计并实现了一个面向Web的在线云服务系统。该系统能够根据用户提供的医学影像和问题提供带不确定性估计的回答，随时随地为用户提供安全，可靠，尽可能准确的Med-VQA服务。
+		该系统还具有对用户复杂输入模态的自适应能力，有着良好的鲁棒性和实用性的同时还可以给用户提供更丰富的人机交互体验。可应用于互联网生态以及结合各大医疗系统提供在线医疗服务。
+	\end{enumerate}	
 
-	本模板由Shun Xu\cite{_}以及yecfly\cite{_a}的模板修改而来，适合于华南理工大学硕/博士毕业论文。既然已经入坑LaTeX，就不推荐使用LYX，但本模板在修改祖传代码过程中仅对修改部分进行更新，其余部分仍保留源代码。另外参考文献管理软件推荐使用zotero，这也是本模板使用的软件。本模板最主要的改动是参考文献使用biber，而不是原来的bibtex，因此不再需要.bst文件。
+	
 
-\keywordsCN{\LaTeX{}；论文}
+\keywordsCN{\LaTeX{}；医学视觉问答；多编码器；注意力机制；深度学习；贝叶斯神经网络}
 
 \chapter{Abstract}
-	Medical visual question answering (Med VQA) is a challenging multi-modal task that has received extensive research attention in the fields of computer vision and natural language processing. Due to the lack of labeled data, existing methods commonly employ transfer learning to obtain effective medical image representations, which are inherently limited. Moreover, the traditional two-tower architecture is used for cross-modal fusion, where the image and text features are processed separately and independently.
-	
-	Therefore, this paper introduces a contrastive learning pre-training method and adopts a mixture of multiple encoders to obtain more effective medical image representations. The paper also introduces a cross-modal self-attention mechanism to selectively capture the long-term contextual relationship between images and text, thereby more effectively fusing visual and language features. Additionally, due to the sensitive nature of medical problems, a new inference model is designed based on the Bayesian uncertainty principle, which ensures the reliability and safety of the model's diagnostic results by measuring the uncertainty of the prediction results and improves the model's interpretability.
-	
-	Existing experimental results show that this method has comprehensive performance superiority over most mainstream methods and achieves SOTA levels in some cases.
+Visual Question Answering (VQA) refers to the human-computer interaction in which a computer understands and answers natural language questions related to a picture given by the user.
+At the same time, VQA can be divided into many categories of applications according to the usage scenarios, among which Medical Visual Question Answering (Med-VQA) aims to provide high-quality, convenient and efficient medical consultation services for healthcare professionals and patients by allowing computers to obtain information from medical images and answer medical questions raised by users.
+However, the real-world application of Med-VQA faces many challenges due to the lack of medical data samples, the huge semantic gap between medical images and text, and the high risks associated with the application of technology in health care. In view of the fact that none of the existing schemes can solve these problems well, the following research is conducted in this paper:
 
-\keywordsEN{\LaTeX{}; Paper}
+\begin{enumerate}
+	\item Compared with rich natural image question-answering datasets, Med-VQA has significant data defects, such as high annotation costs, large noise in medical images, and low useful information proportion. 
+	Existing Med-VQA models still have significant shortcomings in medical image feature extraction and modeling methods for related semantics. The extracted image features are limited and difficult to associate with more fine-grained semantic features. 
+	To address these problem, this paper designs a Multi-Encoder Mixed Self-Attention Network (MEMSA) for medical visual question answering research based on mixed visual enhancement technology. 
+	This method first introduces multiple encoders to extract different aspects of image features, achieve image denoising, and improve the generalization representation ability under small samples. 
+	It also designs a cross-modal self-attention mechanism for feature fusion and context-related semantic modeling to obtain more fine-grained, accurate, and comprehensive semantic feature representations.
+	\item Existing Med-VQA models use point estimation to make answer predictions and lack the ability to output answer uncertainty. Overconfident answers are a high-risk behavior in the medical field, requiring corresponding avoidance methods and measures. 
+	Therefore, based on MEMSA, this paper designs a Bayesian MLP classifier (BMLP) for outputting the prediction uncertainty of MEMSA based on Bayesian neural networks, allowing MEMSA networks to accurately answer medical image-related questions and output answer uncertainty. 
+	At the same time, sampling experiments and rejection classification experiments are carried out for uncertainty estimation in medical visual question answering, explaining the source of uncertainty and how rejection classification methods can be used to reduce and prevent uncertainty in medical question answering predictions.
+	\item Based on the above models, and in response to the current difficulty of Med-VQA landing, this paper designs and implements an online cloud service system that can provide answers with uncertainty estimates based on user-provided medical images and questions anytime, anywhere. 
+	This system is designed to be safe, reliable, and provide as accurate medical visual question answering services as possible. The system is also capable of adapting to complex input modes, improving system robustness and practicality, and providing users with a good human-machine interaction experience, enriching human-machine interaction methods. 
+	It can be applied to the internet ecology and provide online medical services combined with major medical systems.
+\end{enumerate}
+
+\keywordsEN{Med-VQA; Multi-Encoder; Attention Mechanism; Deep Learning; Bayesian Neural Network}

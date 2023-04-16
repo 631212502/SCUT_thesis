@@ -1,5 +1,5 @@
 \chapter{相关工作以及技术}
-本章介绍本文研究中涉及到的关键理论与技术，主要包括视觉问答技术、各类型的编码器，跨模态自注意力机制以及贝叶斯不确定性估计理论。
+本章介绍本文研究中涉及到的数据集和关键理论与技术。数据集主要包括Med-RAD和SLAKE两大Med-VQA数据集；关键理论与技术主要包括视觉问答技术、视觉问答系统、VQA中的编码技术原理，跨模态自注意力机制以及贝叶斯不确定性估计理论。
 
 \section{视觉问答技术}
 视觉问答\cite{antol2015vqa}（Visual Question Answering，VQA）是一种结合了计算机视觉和自然语言处理技术的交叉领域任务，其目标是让机器理解人类提出的关于图像内容的自然语言问题，并在语言层面上回答这些问题.如\ref{vqademo}所示,
@@ -8,7 +8,7 @@
 	% 图片居中（列居中对齐）
 	\centering	
 	% 包含当前路径下的Fig文件夹的图片文件
-	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter2/vqademo.png}  %scale = 0.3
+	\includegraphics[width=1\textwidth]{Fig/myfig/chapter2/vqademo.png}  %scale = 0.3
 	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
 	\caption{\label{vqademo}视觉问答样例} 
 \end{figure}
@@ -54,8 +54,45 @@ VQA技术的基本流程包括图像特征提取、问题特征提取、多模�
     用于医学教育的系统主要目的是帮助医学教育工作者、学生和其他研究人员更好地学习和理解医学知识。这类系统需要提供丰富、准确的医学知识和信息，并且要具有易用性和可扩展性，以满足不同的学习需求。例如，一些病理学视觉问答系统可以帮助医学学生更好地理解组织病理学的知识，同时也可以为病理医生提供更快速、准确的诊断和治疗决策支持。
 \end{enumerate}
 
-\section{编码器介绍}
-\subsection{图像编码方法}
+\section{Med-VQA数据集}
+医学视觉问答是一个新兴领域，且由于标准成本较高，与通用领域相比，现拥有的公开数据集十分稀少。其中的主要代表是VQA-Med、VQA-RAD、PATH、SLAKE这四个数据集。VQA-Med-2018\cite{hasan2018overview}是领域内第一个公开可用的数据集，
+也是Med-VQA领域标准竞赛数据集。由于仅仅用于竞赛的原因，目前VQA-Med的缺陷是QA对是通过半自动化的方式生成的：由基于规则的问题生成系统（QG）通过句子简化、答案短语识别、问题生成和候选问题排序自动生成可能的问答对。然后由两名专家进行人工注释。
+
+同年，完全由专业临床医生注释和标注的VQA-RAD\cite{lau2018dataset}数据集被提出，是一个仅包含放射医学影像和问答对构成的数据集，同时也是一个平衡的数据集，包含MedPix中头部、胸部和腹部的样本。为了在现实场景中调查问题，作者将图像呈现给临床医生收集非引导问题。临床医生被要求在自由结构和模板结构中提出问题。
+随后，对QA进行人工验证和分类，以分析临床重点。答案类型要么是封闭的，要么是开放的。尽管没有大量的数据，但VQA-RAD数据集已经获得了医疗VQA系统作为AI放射科医生应该能够回答的基本信息。SLAKE\cite{liu2021slake}是参考Med-RAD所做的数据集，该数据集是第一个具有语义标签和结构化医学知识库的数据集，同时也是目前医学视觉问答中严谨由医生做出标注的唯二放射图像数据集。
+
+第一个病理学视觉知识问答数据集PathVQA\cite{he2020pathvqa}提出，制作初衷是探索是否有可能培养出通过医学委员会认证考试的AI病理学模型，配图文字的图片是从数字资源(电子教科书和在线图书馆)中提取的。作者开发了一个半自动的管道，将字幕转换为QA对，并手动检查和修改生成的QA对。问题可以分为七类:what, where, when, whose, how, how much/how many, and yes/no。
+开放性问题占所有问题的50.2\%。对于“是/否”问题，答案是8145个“是”和8189个“否”。这些问题是根据美国病理学委员会(ABP)的病理学家认证考试设计的。因此，对决策支持中的“AI病理学家”进行验证是一门考试。PathVQA数据集表明，医疗VQA可以应用于各种场景。
+
+各数据集的数据量如表\ref{tab:Date-set}所示。同时为了保证模型具备实用性，本文主要采用Med-RAD、Slake两个经过临床医生严谨标注的数据集对模型进行训练和测试。
+\begin{table}
+	\caption{\label{tab:Date-set}现有Med-VQA数据集}
+	\centering
+	\small
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline Dataset & Images & QA pairs & Q type & Field \\
+		\hline VQA2.0 & $204 K$ & $614 \mathrm{~K}$ & close\&open & 通用领域（对比） \\
+		\hline VQA-Med-2018 & 2,866 & 6,413 & close\&open & 竞赛数据集v0 \\
+		\hline VQA-RAD & 315 & 3,515 & close\&open & 放射学领域 \\
+		\hline VQA-Med-2019 & 4,200 & 15,292 & close\&open  & 竞赛数据集v1 \\
+		\hline RadVisDial & 91,060 & 455,300 & close & 放射学领域 \\
+		\hline PathVQA & 4,998 & 32,799 & close\&open & 病理学数据集 \\
+		\hline VQA-Med-2020 & 5,000 & 5,000 & close\&open  & 竞赛数据集v3 \\
+		\hline SLAKE & 642 & $14 \mathrm{~K}$ & close\&open & 放射学领域 \\
+		\hline VQA-Med-2021 & 5,000 & 5,000 & close\&open & 竞赛数据集v4 \\
+		\hline
+	\end{tabular}
+\end{table}
+%
+\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=44pt, itemindent=0pt, labelsep=6pt, label=(\arabic*)]
+	\item 如上表所示，Med-RAD数据集有315张图片，3515对问答对，是一个包含X-ray、CT和MRI三类图片以及14类不同问题的放射医疗影像数据集，主要数据来源于美国国家在线医疗图像数据库MedPix。
+	Med-RAD同时也是Med-VQA领域中最轻量化的数据集，十分适合开展小样本数据下的训练和研究。本文选择Med-RAD作为主要的训练、测试和验证数据集，不但可以检验模型的性能，还可以测试MEMSA模型在小样本下的拟合能力、健壮性以及泛化能力。
+	\item SLAKE数据集是近两年最新推出的新数据集，其制作方式参考了Med-RAD，不同的是，SLAKE的数据的样本量上有了明显的提升。SLAKE有642张医学影像图片，14K问答对，样本总量约为Med-RAD的8倍，同样是一个放射学影像数据集，相比于Med-RAD，SLAKE是一个具有语义标签和结构化医学知识库的综合数据集。
+	图像的语义标签为可视对象提供掩码（分割）和边界框（检测），并以知识图谱的形式提供了医学知识库。本文选择具有同样图像样本以及问答样本类型的SLAKE数据集作为Med-RAD的对比测试数据集，测试模型在数据量增大近一个量级的数据集上的综合表现。
+\end{enumerate}
+
+\section{VQA中的编码技术原理}
+\subsection{图像编码技术}
 在计算机视觉等相关领域，图片作为最重要的信息来源，决定了提取图像特征是一个十分重要且关键的环节，高效的特征提取方法可以充分挖掘图像潜在的信息，
 显著地加强图像的表征能力，有利于后续的模型进行训练以及推理，同时也可以防止特征冗余并且提高整个特征处理过程的效率。
  
@@ -92,20 +129,28 @@ VQA技术的基本流程包括图像特征提取、问题特征提取、多模�
 	既在上游通过同类型数据对初始模型进行预训练，然后再针对下游任务特性进行微调的过程。CLIP常用于将自然语言和视觉信息融合在一起，实现对图像和文本的联合理解，其核心思想使用对比学习来训练一个大型的神经网络，使其能够对图像和文本进行联合编码。
 \end{enumerate}
 
-\subsection{词向量编码技术}
+\subsection{文本编码技术}
 词向量编码技术又称为词嵌入技术，是将自然语言中的单词映射到向量空间中的过程，目的是将单词转换为机器可读的形式，以便于在自然语言处理任务中使用。词嵌入的主要目的是将单词的语义信息编码到向量表示中，以便于在机器学习任务中进行处理。
 在词向量编码中，向量的每个维度通常代表着不同的语义信息，如词性、情感、主题等。常见的词嵌入方法有Word2Vec、GloVe、BERT等，在自然语言处理领域、文本的编码以及向语义空间的转换一直是学者们重点关注的话题。
 \begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=44pt, itemindent=0pt, labelsep=6pt, label=(\arabic*)]
-	\item Word2Vec：由Google在2013年提出\cite{mikolov2013efficient,mikolov2013distributed}，主要有两种模型：连续词袋模型（Continuous Bag of Words，CBOW）和Skip-Gram模型。
+	\item Word2Vec
+	
+	由Google在2013年提出\cite{mikolov2013efficient,mikolov2013distributed}，主要有两种模型：连续词袋模型（Continuous Bag of Words，CBOW）和Skip-Gram模型。
 	这两种模型都是基于神经网络的训练方法，通过将单词表示为向量，将单词的语义信息转换为连续的向量空间。Word2Vec的词向量在自然语言处理领域中非常流行。
-	\item GloVe: GloVe（Global Vectors for Word Representation）是一种基于全局词汇统计信息的词嵌入方法\cite{pennington2014glove}，由斯坦福大学的研究者开发。它的目标是学习一个向量空间，使得在该空间中的向量可以很好地表示不同单词之间的语义关系。
+	\item GloVe:
+	
+	GloVe（Global Vectors for Word Representation）是一种基于全局词汇统计信息的词嵌入方法\cite{pennington2014glove}，由斯坦福大学的研究者开发。它的目标是学习一个向量空间，使得在该空间中的向量可以很好地表示不同单词之间的语义关系。
 	与Word2Vec等方法不同，GloVe使用了全局的共现矩阵来学习词嵌入，而不是像Word2Vec那样基于局部上下文信息。GloVe的训练过程通过最小化一个特定的损失函数来进行，该损失函数旨在最大化两个单词之间的共现概率和它们之间的向量差异。
 	GloVe的优点是可以在较小的数据集上训练得到良好的词向量表示，并且可以通过简单的线性变换进行求和、平均等操作。
-	\item Bert编码:Bert作为一个强大的基于Transformer的预训练语言模型\cite{devlin2018bert}，在单独作为编码器使用时有几个独有的优势：1.双向性，Bert采用了
+	\item Bert编码
+	
+	Bert作为一个强大的基于Transformer的预训练语言模型\cite{devlin2018bert}，在单独作为编码器使用时有几个独有的优势：1.双向性，Bert采用了
 	双向Transformer来建模输入句子的上下文信息，使得模型可以从左向右和从右向左两个方向去理解句子，从而更好地捕捉句子的上下文信息。2.预训练
 	和微调，Bert在大规模语料上进行预训练，学习得到了通用的语言表示。在实际的应用中，可以通过微调将Bert模型应用到特定的自然语言处理任务中
 	这样可以在相对较少的标注数据上获得良好的效果。此外，Bert还具有多层次抽象的能力以及针对不同的下游任务有着很强的适应能力。
-	\item 对比学习预训练的医学文本编码器PubMedCLIP:随着OpenAI在2021年发布对比学习预训练CLIP方法，越来越多的任务采用了预训练+微调这一模式，
+	\item 对比学习预训练的医学文本编码器PubMedCLIP
+	
+	随着OpenAI在2021年发布对比学习预训练CLIP方法，越来越多的任务采用了预训练+微调这一模式，
 	既在上游通过同类型数据对初始模型进行预训练，然后再针对下游任务特性进行微调的过程。CLIP常用于将自然语言和视觉信息融合在一起，实现
 	对图像和文本的联合理解，其核心思想使用对比学习来训练一个大型的神经网络，使其能够对图像和文本进行联合编码。
 \end{enumerate}
@@ -138,11 +183,12 @@ VQA技术的基本流程包括图像特征提取、问题特征提取、多模�
 \subsection{注意力机制}
 注意力是深度学习中的一个强大机制，它允许模型关注输入数据的特定部分，同时过滤掉不相关的信息。注意力最早是在自然语言处理（NLP）任务的背景下引入的，如机器翻译，它被用来对齐输入和输出序列。
 从本质上讲，注意力使神经网络能够有选择地处理输入数据的不同部分，为不同的输入元素分配不同的权重。这些权重是在训练过程中学习的，并且是基于模型对其对手头任务的重要性的预测。
-最简单的注意力形式在数学上可以表达为：
-$$
-\operatorname{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V})=\operatorname{softmax}\left(\frac{\mathbf{Q K}^T}{\sqrt{d_k}}\right) \mathbf{V}
-$$
-其中，$Q、K、V$分别是注意力的查询、键和值矩阵，$d_k$是键向量的维数。等式说明注意力机制计算的是$\mathbf{V}$的加权和，权重是查询和键直接的相关关系（此处为点积），以键向量的平方根为尺度，使用softmax函数将权重大小归一化，
+最简单的注意力形式在数学上可以表达为\eqref{attention}:
+\begin{equation}
+	\label{attention}
+	\operatorname{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V})=\operatorname{softmax}\left(\frac{\mathbf{Q K}^T}{\sqrt{d_k}}\right) \mathbf{V}
+\end{equation}
+其中，$Q$、$K$、$V$分别是注意力的查询、键和值矩阵，$d_k$是键向量的维数。等式说明注意力机制计算的是$\mathbf{V}$的加权和，权重是查询和键直接的相关关系（此处为点积），以键向量的平方根为尺度，使用softmax函数将权重大小归一化，
 同时也代表键值的概率分布。
 
 除NLP外，注意力机制还可以被广泛应用于各种任务，包括图像说明、视觉问题回答和语音识别等等。在这些应用中，注意力允许模型关注输入图像或音频信号的特定区域或特征，以便更好地理解底层结构并提取相关信息。
@@ -155,9 +201,9 @@ $$
 	% 图片居中（列居中对齐）
 	\centering	
 	% 包含当前路径下的Fig文件夹的图片文件
-	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter2/sys_vqa.png}  %scale = 0.3
+	\includegraphics[width=0.6\textwidth]{Fig/myfig/chapter2/selfatt.png}  %scale = 0.3
 	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-	\caption{\label{sys_need}视觉问答系统} 
+	\caption{\label{sys_need}自注意力机制} 
 \end{figure}
 
 \subsection{跨模态注意力}
@@ -168,18 +214,19 @@ $$
 	% 图片居中（列居中对齐）
 	\centering	
 	% 包含当前路径下的Fig文件夹的图片文件
-	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter2/sys_vqa.png}  %scale = 0.3
+	\includegraphics[width=1\textwidth]{Fig/myfig/chapter2/cross-attention.png}  %scale = 0.3
 	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-	\caption{\label{sys_need}视觉问答系统} 
+	\caption{\label{sys_need}跨模态注意力机制} 
 \end{figure}
 
 \section{贝叶斯不确定性估计理论}
 \subsection{贝叶斯定理}
 贝叶斯定理是概率论中的一个基本公式，描述了在给定一些证据（观测值）的情况下，如何更新对一个事件发生的概率的估计。条件概率（又称后验概率）就是事件A在另外一个事件B已经发生条件下的发生概率。条件概率表示为P(A|B)，读作“在B条件下A的概率”。
-其计算方式可以描述为，假设在同一个样本空间Ω中的事件或者子集A与B，如果随机从Ω中选出的一个元素属于B，那么这个随机选择的元素还属于A的概率就定义为在B的前提下A的条件概率：
-$$
-P(A \mid B)=\frac{P(A \cap B)}{P(B)}
-$$
+其计算方式可以描述为，假设在同一个样本空间Ω中的事件或者子集A与B，如果随机从Ω中选出的一个元素属于B，那么这个随机选择的元素还属于A的概率就定义为在B的前提下A的条件概率\eqref{bayes}：
+\begin{equation}
+	\label{bayes}
+	P(A \mid B)=\frac{P(A \cap B)}{P(B)}
+\end{equation}
 
 $P(A)$和$P(B)$是事件A和B发生的先验概率，${P(A \cap B)}$是它们的联合概率。
 
@@ -219,3 +266,5 @@ $$
 
 蒙特卡洛方法\cite{metropolis1953equation}是一种基于采样的方法，通过从后验分布中采样得到样本，从而近似后验分布。常用的蒙特卡洛方法有马尔科夫链蒙特卡洛（MCMC）和重要性采样（Importance Sampling）等。
 蒙特卡洛方法的优点是能够直接从后验分布中采样，对分布形态的限制较少，能够得到更加精确的后验分布近似。但是，蒙特卡洛方法在计算量上通常较大，需要进行大量的采样。
+
+% \subsection{模态自适应原理}
