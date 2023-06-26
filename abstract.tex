@@ -1,39 +1,36 @@
 \chapter{摘\texorpdfstring{\quad}{}要}
-	视觉问答（Visual Question Answering，VQA）指的是用户给定一张图片，计算机理解并回答与该图片相关的自然语言问题这样一种人机交互方式，它结合了计算机视觉和自然语言处理等领域的研究，是一个经典的多模态问题。
-	同时VQA依据使用场景可以划分成众多门类的应用，其中医学视觉问答技术(Medical Visual Question Answering，Med-VQA)旨在让计算机从医学影像中获取信息并回答使用者提出的医学问题，从而为医护人员和患者提供优质便捷高效的医疗咨询服务。
-	然而由于医学数据样本的匮乏、医学图像和文本之间存在巨大的语义鸿沟以及医疗卫生领域的科技应用往往伴随着十分高的风险，Med-VQA在现实世界中的应用面临着诸多挑战。鉴于现有方案都无法很好地解决这些问题，对此本文进行了如下研究：
-	\begin{enumerate}
-		\item 相比于丰富的自然图像问答数据集，Med-VQA目前存在着重大的数据缺陷，如无法通过机器生成、具有高昂的人工标注成本、医学图像噪声大和有用信息占比低等问题。同时与VQA模型相比，现有的Med-VQA模型在医学图像特征提取以及关联语义建模上仍有较大差距。
-		现有Med-VQA方法提取到的图像特征十分有限，同时也难以和更细粒度的语义特征相关联。针对这些问题，本文基于混合视觉增强技术提出了一种多编码器混合自注意网络（MEMSA）用于Med-VQA研究。
-		该网络首先引入了多个编码器来提取不同方面的图像特征，以实现图像降噪以及提高小样本下的特征丰富度。同时设计了一种跨模态自注意力机制用于特征融合和上下文关联性语义建模，以获得更细粒、更准确和更全面的语义特征表示。
-		\item 现有的Med-VQA模型采用的是点估计的形式来进行答案预测，不具备输出答案不确定性的能力。但“过于自信”的回答在医学领域是一个具有高风险性的行为，为避免医疗事故的发生，需要采取与之相应规避方法和措施。为此，本文在MEMSA和
-		贝叶斯神经网络的基础上，提出了一种贝叶斯分类器（BMLP）用于输出Med-VQA模型在预测时的不确定性。BMLP使得MEMSA网络能够准确地回答医学图像相关问题的同时，还能输出其答案的不确定性。同时，本文也对Med-VQA中的不确定性估计开展了采样分析实验和拒绝分类实验，
-		论述了不确定性的由来以及阐释了拒绝分类方法如何用于减小和防范医学问答预测时所出现的不确定性。
-		\item 在上述模型的基础上，针对目前Med-VQA落地难这一问题，结合模态自适应、云计算等技术，设计并实现了一个面向Web的在线云服务系统。该系统能够根据用户提供的医学影像和问题提供带不确定性估计的回答，随时随地为用户提供安全，可靠，尽可能准确的Med-VQA服务。
-		该系统还具有对用户复杂输入模态的自适应能力，有着良好的鲁棒性和实用性的同时还可以给用户提供更丰富的人机交互体验。可应用于互联网生态以及结合各大医疗系统提供在线医疗服务。
+	视觉问答（Visual Question Answering，VQA）是一项集合了计算机视觉和自然语言处理等领域研究的多模态技术，它旨在让机器可以像人一样理解图像和语言之间的关系，进而推理出正确的回答，是人工智能走向通用化的关键技术之一。
+	VQA依据使用场景可以划分成众多门类的应用，其中医学视觉问答技术(Medical Visual Question Answering，Med-VQA)旨在让计算机从医学影像中获取信息并回答使用者提出的医学问题，为医护人员和患者提供优质便捷高效的医疗咨询服务。
+	然而目前由于医学问答样本十分匮乏、医学图像和文本之间存在巨大的语义鸿沟以及医疗卫生领域的科技应用往往伴随着十分高的风险，Med-VQA在现实世界中的应用面临着诸多挑战。针对以上这些问题，本文开展了如下研究：
+	\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=0pt, itemindent=44pt, labelsep=6pt, label=(\arabic*)]
+		\item 目前Med-VQA存在着许多数据上的问题，如总量少、无法通过机器生成、具有高昂的人工标注成本、医学图像噪声大和有用信息占比低。同时现有Med-VQA方法和模型无法有效提取医学图像和问答文本间的语义关联。针对以上问题，本文基于混合视觉增强技术提出了一种多编码器混合自注意网络（MEMSA）用于Med-VQA研究。
+		该网络使用了降噪自编码器、元学习模型和对比语言-图像预训练模型来提取不同方面的图像特征，以实现图像降噪和提高抽取特征的丰富度。并且配合文本编码器设计了一种跨模态自注意力机制用于特征融合和上下文关联性语义建模，以获得具有更细粒度、更准确全面的语义特征表示。实验结果表明，MEMSA的性能优于目前同类方案下的主流模型，
+		并且针对开放式问答的提升较为明显。
+		\item 由于医学问答是一种具有高风险性的行为，为避免医疗事故的发生，需要模型能够给医生和患者提供自身回答的不确定性信息，从而帮助他们规避风险。现有Med-VQA模型采用的都是点估计的形式来进行回答预测，不具备估计不确定性的能力。为此，本文在MEMSA和贝叶斯神经网络的基础上，提出了一种贝叶斯分类器（BMLP），
+		使得MEMSA网络能够在回答医学图像相关问题的同时，还能输出答案的不确定性。实验结果表明，BMLP可以通过评估模型回答的不确定性来量化风险，进而可以通过拒绝分类等方式提高模型的可靠性和安全性。
+		\item 在上述模型的基础上，结合模态自适应、云服务等技术，设计并实现了一个面向Web的在线云服务系统。该系统能够根据用户提供的医学影像和问题，提供带不确定性估计的回答。同时该系统还具有对用户复杂输入模态的自适应能力，有着良好的鲁棒性和实用性。
+		经过实验和系统测试，该系统能够准确识别输入医学图像模态并自适应选择交互模型，提供便捷高效的在线医学视觉问答服务。
 	\end{enumerate}	
 
 	
-
-\keywordsCN{\LaTeX{}；医学视觉问答；多编码器；注意力机制；深度学习；贝叶斯神经网络}
+\keywordsCN{医学视觉问答；多编码器；注意力机制；深度学习；贝叶斯神经网络}
 
 \chapter{Abstract}
-Visual Question Answering (VQA) refers to the human-computer interaction in which a computer understands and answers natural language questions related to a picture given by the user.
-At the same time, VQA can be divided into many categories of applications according to the usage scenarios, among which Medical Visual Question Answering (Med-VQA) aims to provide high-quality, convenient and efficient medical consultation services for healthcare professionals and patients by allowing computers to obtain information from medical images and answer medical questions raised by users.
-However, the real-world application of Med-VQA faces many challenges due to the lack of medical data samples, the huge semantic gap between medical images and text, and the high risks associated with the application of technology in health care. In view of the fact that none of the existing schemes can solve these problems well, the following research is conducted in this paper:
-
-\begin{enumerate}
-	\item Compared with rich natural image question-answering datasets, Med-VQA has significant data defects, such as high annotation costs, large noise in medical images, and low useful information proportion. 
-	Existing Med-VQA models still have significant shortcomings in medical image feature extraction and modeling methods for related semantics. The extracted image features are limited and difficult to associate with more fine-grained semantic features. 
-	To address these problem, this paper designs a Multi-Encoder Mixed Self-Attention Network (MEMSA) for medical visual question answering research based on mixed visual enhancement technology. 
-	This method first introduces multiple encoders to extract different aspects of image features, achieve image denoising, and improve the generalization representation ability under small samples. 
-	It also designs a cross-modal self-attention mechanism for feature fusion and context-related semantic modeling to obtain more fine-grained, accurate, and comprehensive semantic feature representations.
-	\item Existing Med-VQA models use point estimation to make answer predictions and lack the ability to output answer uncertainty. Overconfident answers are a high-risk behavior in the medical field, requiring corresponding avoidance methods and measures. 
-	Therefore, based on MEMSA, this paper designs a Bayesian MLP classifier (BMLP) for outputting the prediction uncertainty of MEMSA based on Bayesian neural networks, allowing MEMSA networks to accurately answer medical image-related questions and output answer uncertainty. 
-	At the same time, sampling experiments and rejection classification experiments are carried out for uncertainty estimation in medical visual question answering, explaining the source of uncertainty and how rejection classification methods can be used to reduce and prevent uncertainty in medical question answering predictions.
-	\item Based on the above models, and in response to the current difficulty of Med-VQA landing, this paper designs and implements an online cloud service system that can provide answers with uncertainty estimates based on user-provided medical images and questions anytime, anywhere. 
-	This system is designed to be safe, reliable, and provide as accurate medical visual question answering services as possible. The system is also capable of adapting to complex input modes, improving system robustness and practicality, and providing users with a good human-machine interaction experience, enriching human-machine interaction methods. 
-	It can be applied to the internet ecology and provide online medical services combined with major medical systems.
+Visual Question Answering (VQA) is a multimodal technology that combines research in computer vision and natural language processing to enable machines to understand the relationship between images and language like humans do, and infer the correct answer. 
+It is one of the key technologies for the generalization of artificial intelligence. VQA can be divided into many types of applications depending on the usage scenario. 
+Medical Visual Question Answering (Med-VQA) aims to enable computers to extract information from medical images and answer medical questions posed by users, providing high-quality, convenient, and efficient medical consultation services to medical staff and patients. 
+However, due to the scarcity of medical question and answer samples, the huge semantic gap between medical images and text, and the high risk associated with the application of technology in the medical and health fields, Med-VQA faces many challenges in the real world.
+To address these issues, this paper conducted the following research:
+\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=0pt, itemindent=44pt, labelsep=6pt, label=(\arabic*)]
+	\item Currently, there are many data-related issues with Med-VQA, such as a small total quantity of data, inability to be generated by machines, high costs for manual labeling, high noise levels in medical images, and low proportion of useful information. 
+	Existing Med-VQA methods and models cannot effectively extract semantic correlations between medical images and Q\&A text. To address these issues, this paper proposed a multi-encoder mixed self-attention network (MEMSA) for Med-VQA research based on mixed visual augmentation technology. 
+	The network uses denoising autoencoders, meta-learning models, and contrastive language-image pre-training models to extract different aspects of image features to achieve image denoising and improve the richness of extracted features. 
+	Additionally, a cross-modal self-attention mechanism was designed to fuse features and model semantic relationships to obtain more fine-grained, accurate, and comprehensive semantic feature representations. Experimental results showed that MEMSA outperformed mainstream models under similar schemes, particularly for open-ended questions.
+	\item Since medical Q\&A is a high-risk behavior, to avoid medical accidents, models need to be able to estimate the uncertainty of their answers and help doctors and patients avoid risks. Existing Med-VQA models use point estimation to make answer predictions and do not have the ability to estimate uncertainty. 
+	Therefore, based on MEMSA and Bayesian neural networks, this paper proposed a Bayesian classifier (BMLP), enabling MEMSA networks to output the uncertainty of answers while answering medical image-related questions. Experimental results showed that BMLP can quantify risks by evaluating the uncertainty of model answers, and improve the reliability and safety of the model through methods such as rejecting classification.
+	\item Based on the above models, combined with modal adaptation, cloud services, and other technologies, an online cloud service system for Web was designed and implemented. This system can provide answers with uncertainty estimation based on medical images and questions provided by users, while also having the adaptive ability to handle complex input modalities from users. 
+	It has good robustness and practicality. Through experimentation and system testing, the system can accurately identify input modalities and adaptively select interaction models, providing convenient and efficient online medical visual question answering services.
 \end{enumerate}
+
 
 \keywordsEN{Med-VQA; Multi-Encoder; Attention Mechanism; Deep Learning; Bayesian Neural Network}

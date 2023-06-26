@@ -400,7 +400,9 @@
 \titlespacing{\section}{0pt}{1pt}{1pt}  % 标题间距
 \titlespacing{\subsection}{0pt}{4pt}{0pt}
 \titlespacing{\subsubsection}{0pt}{6pt}{6pt}
-
+% \titlespacing{\section}{0pt}{0.5\baselineskip}{0.5\baselineskip} 
+% \titlespacing{\subsection}{0pt}{0.5\baselineskip}{0.5\baselineskip} 
+% \titlespacing{\subsubsection}{0pt}{0.5\baselineskip}{0.5\baselineskip} 
 \newcommand{\linespacing}[1]{\linespread{#1}\selectfont}% 行距命令
 
 

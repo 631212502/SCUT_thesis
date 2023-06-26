@@ -1,7 +1,7 @@
-\chapter{基于多编码器混合自注意网络的医学视觉问答研究}
-本章提出一种多编码器混合自注意网络（Multi-Encoder Mixture Self-Attention Network，MEMSA）用其展开对医学视觉问答（MED-VQA）问题的研究，在传统采用单一自编码器进行图像编码的模型中分别加入元学习，对比学习等方法训练混合编码器模型
-，多个编码器可以从不同的"视角"和维度，充分挖掘并提取图像信息，获得更丰富的信息表征能力，是一种有效的视觉增强方法\cite{nguyen2019overcoming}。同时采用跨模态自注意力的思想融合不同模态的编码信息，以获得模态间重要的特征关联。
-实验证明，多编码器混合方法以及自注意网络都有效地提高了MED-VQA模型在特征提取部分的融合表征能力，从而提高了视觉问答模型的问答准确率。
+\chapter{基于多编码器混合自注意网络的Med-VQA}
+本章提出一种多编码器混合自注意网络（Multi-Encoder Mixture Self-Attention Network，MEMSA）并用其开展医学视觉问答研究。MEMSA在传统采用单一自编码器进行图像编码的模型中分别加入元学习，对比学习等方法训练混合编码器模型
+，多个编码器可以从不同的"视角"和维度，充分挖掘并提取图像信息，获得更丰富的信息表征能力，是一种有效的视觉增强方法\cite{nguyen2019overcoming}。MEMSA同时采用跨模态自注意力的思想融合不同模态的编码信息，以获得模态间重要的特征关联。
+实验证明，多编码器混合方法以及跨模态自注意网络都有效地提高了MED-VQA模型在特征提取部分的融合表征能力，进而提高了Med-VQA模型的各项性能。
 
 \section{多编码器混合自注意网络}
 \subsection{MEMSA网络架构}
@@ -9,7 +9,7 @@
 该方法的框架如图\ref{Framwork}所示,由主要由特征提取、特征融合、回答预测三部分构成，包含图像编码器、文本编码器、特征融合算法模型以及根据任务
 需要设计的回答预测四大组件。
 
-\subsubsection*{MEMSA网络架构}
+% \subsubsection*{MEMSA网络架构}
 \begin{figure}[htbp]
 	% 图片居中（列居中对齐）
 	\centering	
@@ -20,21 +20,21 @@
 \end{figure}
 如图\ref{Framwork},Med-VQA中图像编码器使用的一般是目前比较成熟的卷积神经网络，如VGGNet、ResNet；文本编码器主要用于编码问题句子，常用的有目前主流的语言编码模型，如LSTM、Bert等。
 编码器通常都使用预训练权重进行初始化，在训练过程中可以冻结也可以用端到端的方式进行微调。特征融合以及算法部分目前主流的方式有加权融合，拼接融合，注意力融合等方法。
-回答预测部分根据任务的不同往往采用不同的设计：如针对分类问题，组件通常是一个神经网络分类器；针对生成问题，组件通常是循环神经网络（RNN）语言生成器或者注意力模型。
+回答预测部分根据任务的不同往往采用不同的设计：如针对分类问题，组件通常是一个神经网络分类器；针对生成问题，组件通常是循环神经网络语言生成器或者纯注意力模型。
 
-\subsubsection*{MEMSA模型设计}
+% \subsubsection*{MEMSA模型设计}
 依据上述视觉问答的基本框架，并针对当前医学视觉问答（Med-VQA）问题存在的几大难点提出了如图\ref{fig:memsa}所示的多编码器混合自注意网络模型（MEMSA）：
 \begin{figure}[htbp]
 	% 图片居中（列居中对齐）
 	\centering	
 	% 包含当前路径下的Fig文件夹的图片文件
-	\includegraphics[width=1.1\textwidth]{Fig/myfig/chapter3/modal_net.png}  %scale = 0.3
+	\includegraphics[width=1.1\textwidth]{Fig/myfig/chapter3/model_net2.png}  %scale = 0.3
 	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-	\caption{\label{fig:memsa}多编码融合自注意力网络} 
+	\caption{\label{fig:memsa}多编码器混合自注意力网络} 
 \end{figure}
 
 MEMSA网络的输入为图像和针对图像提出的开放式或者封闭式文本问题。首先，MEMSA在特征提取部分，使用多个编码器分别提取图像的
-特征表示，再使用如图GloVe词编码空间和LSTM网络提取问题的文本特征表示。
+特征表示，再使用如图\ref{fig:Glove}GloVe词编码空间和LSTM网络提取问题的文本特征表示。
 
 接着，在多模态融合部分，先将图像的特征表示和文本的特征表示拼接，拼接后和自身的转置组合成类似于共现矩阵的形式,再对该矩阵计算跨模态自注意力，通过注意力加权
 提取出其融合表征，通过残差连接将不同层提取到的信息保持，最终通过每一层特征加和的方式得到一个具有高度相关性的图像-文本联合表征。
@@ -49,7 +49,7 @@ MEMSA网络的输入为图像和针对图像提出的开放式或者封闭式文
 适用于医学视觉问答这一领域。对比学习预训练模型由于在大样本预训练时充分学习了图像和语义的对齐关系，所以在编码上有着更丰富的表示，有利于完成开放式问题的回答。
 \subsubsection*{图像编码器}
 用于MEMSA的图像编码器，由卷积降噪自编码器CDAE、模型不可知元学习模型MAML以及医学对比学习预训练模型PubMedCLIP三个部分混合构成：
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=44pt, itemindent=0pt, labelsep=6pt, label=(\arabic*)]
+\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=0pt, itemindent=44pt, labelsep=6pt, listparindent=22pt, label=(\arabic*)]
 	\item 卷积降噪自编码器CDAE
 	
 	卷积降噪自编码器(Convolutional Denoising Auto-Encoder，CDAE)有编码器和解码器两部分，编码器通过卷积和池化操作提取特征并输出给具有较低维度的隐藏层学习其表示，该表示包含了图像的主要特征而过滤掉了噪声（采用均方误差MSE），再由解码器重新进行上采样重建后获得了更纯净的图像表示，
@@ -58,7 +58,7 @@ MEMSA网络的输入为图像和针对图像提出的开放式或者封闭式文
 		\label{}
 		L_{r e c}=\|x-y\|_2^2	
 	\end{equation}
-	遵循上述原理设计降噪自编码器。为了得到较好的隐变量表示，降噪自编码器由5层卷积层堆栈而成。解码器是一个反卷积层和卷积层的堆栈。带噪声的$x^{\prime}$是通过在原始图像$x$上添加高斯噪声来实现的。
+	遵循上述原理设计用于MEMSA的CDAE。为了得到较好的隐变量表示，降噪自编码器由5层卷积层堆栈而成。解码器是一个反卷积层和卷积层的堆栈。带噪声的$x^{\prime}$是通过在原始图像$x$上添加高斯噪声来实现的。
 	训练结束后使用编码器和解码器的权值在模型中进行微调。
 
 	\item 模型不可知元学习编码器MAML
@@ -94,7 +94,7 @@ MEMSA网络的输入为图像和针对图像提出的开放式或者封闭式文
 \subsubsection*{文本编码器}
 用于MEMSA的问题文本编码器，主要分为Word embedding和Question embedding两部分，一个输入文本或者词汇先由Word embedding按照某一词向量空间表示方法将其映射到一个向量表示空间中，成为一个词向量，然后这些词向量再通过Question embedding进行
 不同向量间的语义关系建模和学习。
-\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=44pt, itemindent=0pt, labelsep=6pt, label=(\arabic*)]
+\begin{enumerate}[topsep = 0 pt, itemsep= 0 pt, parsep=0pt, partopsep=0pt, leftmargin=0pt, itemindent=44pt, labelsep=6pt, listparindent=22pt, label=(\arabic*)]
 	\item Word embedding
 	
 	词编码器（Word embedding）是一个词嵌入算法模型,通常由两层全连接神经网络构成，用于学习文本的词向量表示。MEMSA使用GloVe6b作为词向量编码模型，假设有一个大小为V的词汇表，其中包含单词i。GloVe模型中的目标是学习每个单词的向量表示，使得这些向量可以在预测上下文单词和中心单词时发挥良好的作用。
@@ -112,17 +112,17 @@ MEMSA网络的输入为图像和针对图像提出的开放式或者封闭式文
 		% 包含当前路径下的Fig文件夹的图片文件
 		\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter3/glove.png}  %scale = 0.3
 		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-		\caption{\label{fig:Glove}Glove词嵌入的降维表示} 
+		\caption{\label{fig:Glove}Glove词嵌入降维后的3D空间表示} 
 	\end{figure}
 	\item Question embedding
 	
-	句编码器（Question embedding）是一个用于学习词向量间的语义关系的编码模型，通常可以是循环神经网络（RNN）或者是纯注意力结构。由于医学文本的数据限制，且为了更好地捕获问句序列上下文间的语义联系，MEMSA采用长短时记忆网络\cite{Long short-term memory}（LSTM）作为Quesion embedding。
+	句编码器（Question embedding）是一个用于学习词向量间的语义关系的编码模型，通常可以是循环神经网络（RNN）或者是纯注意力结构。由于医学文本的数据限制，且为了更好地捕获问句序列上下文间的语义联系，MEMSA采用长短时记忆网络\cite{hochreiter1997long}（LSTM）作为Quesion embedding。
 	如图\ref{fig:lstm},LSTM的基本单元包括三个门（输入门、遗忘门、输出门）和一个记忆细胞，其中输入门控制输入信息的重要性，遗忘门控制上一时刻记忆细胞的重要性，输出门控制输出信息的重要性。记忆细胞可以存储和读取信息，从而实现长期依赖关系的建立和维护。
 	\begin{figure}[htbp]
 		% 图片居中（列居中对齐）
 		\centering	
 		% 包含当前路径下的Fig文件夹的图片文件
-		\includegraphics[width=0.5\textwidth]{Fig/myfig/chapter3/lstm.png}  %scale = 0.3
+		\includegraphics[width=0.4\textwidth]{Fig/myfig/chapter3/lstm.png}  %scale = 0.3
 		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
 		\caption{\label{fig:lstm}LSTM网络结构} 
 	\end{figure}
@@ -131,7 +131,7 @@ MEMSA网络的输入为图像和针对图像提出的开放式或者封闭式文
 \end{enumerate}
 
 \subsection{跨模态自注意力机制}
-跨模态自注意力机制由最早P Gao等人\cite{gao2019dynamic}提出，是一种基于自注意力机制实现的跨模态序列融合方法，受Haifan Gong等人\cite{gong2021cross}将其作用在医学图像和文本上的启发。
+跨模态自注意力机制（Cross-modal self-attention，CMSA）最早由P Gao等人\cite{gao2019dynamic}提出，是一种基于自注意力机制实现的跨模态序列融合方法，受Haifan Gong等人\cite{gong2021cross}将其作用在医学图像和文本上的启发。
 由于自注意力机制可以通过对序列中不同位置的元素之间的相互作用进行建模来捕捉序列中的长程依赖关系。
 
 如图不同于传统计算图像文本相似度关系的跨模态注意力机制，MEMSA采用的是从图形文本拼接特征中用自注意力机制提取融合特征；不在各模态中单独计算注意力权重矩阵，而是将不同模态特征统一到一个特征空间里进行表示，通过上建立自我内部序列之间的关联来对各模态之间的特征相关关系进行建模，从而捕获更好的图像-语义关联。
@@ -145,7 +145,7 @@ MEMSA网络的输入为图像和针对图像提出的开放式或者封闭式文
 	\caption{\label{attention_map}词汇级细粒度融合特征关注图} 
 \end{figure}
 
-根据自注意力机制和数学原理，在模态融合前，首先需要将编码得到的视觉特征$v$和问题特征$q$相连接，为了提高表征的细粒度，先将问题特征$q$按词重新拆分，都将其与视觉特征$v$相拼接得到局部特征图$f$，然后重新
+根据自注意力机制及其计算原理，在模态融合前，首先需要将编码得到的视觉特征$v$和问题特征$q$相连接，为了提高表征的细粒度，先将问题特征$q$按词重新拆分，都将其与视觉特征$v$相拼接得到局部特征图$f$，然后重新
 合并组合成融合的多模态特征图$F$。然后对该特征图建立注意力矩阵$Q,K,V$,使用3D卷积分别进一步提取$Q,K,V$特征并重塑成二维的特征表示。用该二维特征与其自身的转置相乘得到特征之间的关联表示，再经过softmax函数缩后放后就得到了对应
 的注意力图：
 \begin{equation}
@@ -179,15 +179,19 @@ MEMSA网络的输入为图像和针对图像提出的开放式或者封闭式文
 变量$N$为控制问题句子长度的超参数，同时也指示问题句子所包含的词汇个数。
 
 \subsection{网络训练}
-MEMSA模型由多个部分组成，包括图像编码，问题编码，跨模态注意力融合以及答案预测。故采用多任务损失并以端到端的方式训练模型：
+由于MEMSA模型由多个部分组成，包括图像编码，问题编码，跨模态注意力融合以及答案预测。故采用多任务损失并以端到端的方式训练模型，图像在经过降噪自编码器、元学习模型、对比学习预训练模型后会得到3个特征分量，
+3个分量经过一定的维度处理后融合成图像特征向量$fv$。同时，文字经过词嵌入转换以及编码后得到了文本特征向量$fq$。两大模态的特征向量经过Fusion处理后输入到跨模态自注意力模块。
+模块用于捕获模态间联系，然后将处理后的融合特征向量交由分类器模型得到最终的预测。预测和真值之间计算多标签交叉熵损失$L_cls$。
+值得一提的是，为了提高降噪自编码器的性能，模型还引入了损失$L_rec$，如公式\eqref{loss}最终的损失由二者求和得到。
 \begin{equation}
-	\label{}
+	\label{loss}
 	L=L_{vqa}+\alpha L_{rec} 
 \end{equation}
 $L_{vqa}$是基于分类的答案预测和标签之间的交叉熵损失；$L_{rec}$如上述是自编码器输出$y$与原始图像$x$之间的重建交叉熵损失。$\alpha$是平衡两个
 损失项的超参数，往往设置为0.5。
-\subsubsection*{实验超参数设置}
-模型的超参数设定如表\ref{tab:su_para}：
+
+为了更好地实现模型，在训练前对模型的超参数和环境进行了一系列的配置，由于Glove嵌入是一个600维的词向量，LSTM对句子进行特征提取的最优维度区间在其词向量维度1.5~2倍之间，同时考虑计算机的浮点数运算速率，
+将LSTM长度设定为1024，为防止融合特征过于稀疏，严格限制其他特征维度在该维度的2倍以内，所有超参数设定如表\ref{tab:su_para}。
 \begin{table}
 	\centering
 	\caption{\label{tab:su_para}模型超参数设置}
@@ -207,38 +211,29 @@ $L_{vqa}$是基于分类的答案预测和标签之间的交叉熵损失；$L_{r
 	\end{tabular}
 \end{table}
 
+MEMSA是个具有较多参数的复杂多模态模型，由于Med-VQA数据量不足，为了防止过拟合，对预训练好的PubMedCLUP编码器中的权重进行固定，模型属性和参数如下表\ref{tab:modal_para}所示。
+\begin{table}
+	\caption{\label{tab:modal_para}模型结构以及相应参数}
+	\centering
+	\small
+	\begin{tabular}{c|ccc}
+		\hline
+		模型结构 & 网络层数 & 参数量 & 是否接收梯度 \tabularnewline
+		\hline
+		CDAE & $5×Conv+2×Maxpool+2×ConvTran$ & $56689$ & True \tabularnewline
+		MAML & $4×Conv+4×BN$ & $111936$ & True \tabularnewline 
+		PubMedCLIP & $2×Embedding+12×Transformer+ResNet50$ & $102007137$ & Flase \tabularnewline
+		W-EMB & $2×Embedding$ & $706800$ & Flase \tabularnewline
+		Q-EMB & $1×LSTM$ & $6660096$ & True \tabularnewline
+		CMSA & $cmsa0+cmsa1$ & $19099080$ & True \tabularnewline
+		FC & $1×Linear$ & $2237440$ & True \tabularnewline
+		MLP & $2×Linear$ & $3037644$ & True \tabularnewline
+		ALL & $40×layers$ & $134965462$ & —— \tabularnewline
+		\hline
+	\end{tabular}
+\end{table}
 
-% \subsubsection{网络参数}
-% 如图\ref{fig:cmae}，图像在经过降噪自编码器、元学习模型、对比学习预训练模型后会得到3个特征分量，3个分量经过一定的维度处理后融合成图像特征向量fv。
-% 同时，文字经过词嵌入转换以及编码后得到了文本特征向量fq。两大模态的特征向量经过Fusion处理后输入到跨模态自注意力模块。
-% 模块用于捕获模态间联系，然后将处理后的融合特征向量交由分类器模型得到最终的预测。预测和真值之间计算多标签交叉熵损失Lcls。
-% 值得一提的是，为了提高降噪自编码器的性能，模型还引入了损失Lrec，最终的损失由二者求和得到。模型属性和参数如下表所示:
-% \begin{table}
-% 	\caption{\label{tab:modal_para}模型结构以及相应参数}
-% 	\centering
-% 	\small
-% 	\begin{tabular}{ccc}
-% 		\hline
-% 		模型结构 & 网络层数 & 参数量 \tabularnewline
-% 		\hline
-% 		DAE & $5Conv2d$ & $1283745$ \tabularnewline
-% 		MAML & $2$ & $1283745$ \tabularnewline
-% 		CLUP & $2$ & $1283745$ \tabularnewline
-% 		WEMB & $2$ & $353400 * 2$ \tabularnewline
-% 		QEMB & $2$ & $2457600$ \tabularnewline
-% 		CMSA & $2$ & $2384928$ \tabularnewline
-% 		MLP & $2$ & $1283745$ \tabularnewline
-% 		ALL & $2$ & $138003102$ \tabularnewline
-% 		\hline
-% 		% \midrule
-% 		% 数据集 & Images & QApairs \\
-% 		% VQA2.0 & 204k &  614K\\
-% 		% VQA-Med-2018 & 1 & 3.00 \\
-% 		% \bottomrule
-% 	\end{tabular}
-% \end{table}
-\subsubsection*{实验条件与环境}
-实验环境设置如表\ref{tab:env_para}：
+为了进一步提高训练效率，采用两张专业级运算卡Titan Xp进行并行运算，详细实验环境和配置如表\ref{tab:env_para}。
 \begin{table}
 	\caption{\label{tab:env_para}深度学习环境配置}
 	\centering
@@ -258,7 +253,7 @@ $L_{vqa}$是基于分类的答案预测和标签之间的交叉熵损失；$L_{r
 
 \section{实验结果}
 \subsection{编码器模型实验对比分析}
-目前各混合视觉增强方法在Med-RAD、SLAKE数据集上的开放式问答，封闭式问答，以及总准确率如表\ref{tab:modal_red_cmp}。其中，因为SLAKE数据集缺少MTPT方法所需要的图像来源标签，所以此处不予计算和讨论。
+目前各混合视觉增强方法在Med-RAD、SLAKE数据集上的开放式问答，封闭式问答，以及总准确率如表\ref{tab:modal_red_cmp1}。其中，因为SLAKE数据集缺少MTPT方法所需要的图像来源标签，所以此处不予计算和讨论。
 \begin{table}
 	\caption{\label{tab:modal_red_cmp1}MEMSA与主流方法等对比}
 	\centering
@@ -272,17 +267,17 @@ $L_{vqa}$是基于分类的答案预测和标签之间的交叉熵损失；$L_{r
 		MTPT-BAN & $47.2 \%$ & $77.8 \%$ & $65.6 \%$ & X & X & X\\
 		CPAE-BAN\cite{eslami2021does} & $48.6 \%$ & $78.1 \%$ & $66.5 \%$ & $76.2 \%$ & $79.9 \%$ & $77.6 \%$\\
 		MEMBA & $52.0 \%$ & $78.0 \%$ & $68.3 \%$ & $76.3 \%$ & $78.6 \%$ & $77.2 \%$\\
-		\hline MVEF-CMSA & $43.9 \%$ & $75.1 \%$ & $62.6 \%$ & $75.8 \%$ & $81.5 \%$ & $78.0 \%$\\
-		MTPT-CMSA\cite{gong2021cross} & $56.1 \%$ & $77.3 \%$ & $68.8 \%$ & X & X & X\\
+		\hline MTPT-CMSA\cite{gong2021cross} & $56.1 \%$ & $77.3 \%$ & $68.8 \%$ & X & X & X\\
 		CPAE-CMSA & $63.7 \%$ & $76.1 \%$ & $71.2 \%$ & $77.2 \%$ & $81.5 \%$ & $78.9 \%$\\
-		MEMSA & $\mathbf{65.4 \%}$ & $\mathbf{77.6 \%}$ & $\mathbf{72.7 \%}$ & $76.0 \%$ & $\mathbf{81.7 \%}$ & $78.2 \%$\\
+		MVEF-CMSA & $61.5 \%$ & $78.7 \%$ & $71.8 \%$ & $75.8 \%$ & $81.5 \%$ & $78.0 \%$\\
+		MEMSA（ours） & $\mathbf{65.4 \%}$ & $77.6 \%$ & $\mathbf{72.7 \%}$ & $76.0 \%$ & $\mathbf{81.7 \%}$ & $78.2 \%$\\
 		\hline
 		\end{tabular}
 \end{table}
 
 从表\ref{tab:modal_red_cmp1}可以预见，在使用经典的双线性池化注意力机制（BAN）以及跨模态自注意力机制（CMSA）作为融合网络时，PubMedCLIP的使用和在多编码器混合作用的效果下，模型在小样本数据集Mad-RAD下的开放式
 问答表现有着明显的提高，采用多编码器混合加双线性池化注意力机制MEMBA这一方法，相比18年Binh等人提出的基线模型MVEF-BAN\cite{nguyen2019overcoming},MEMBA模型针对开放式回答的效果提升了8.1\%,封闭式回答提升了2.9\%,总体性能提升了5.6\%。
-采用MEMSA模型，综合性能分别提升了21.5\%、2.5\%和10\%。在SLAKE数据集上，MEMBA综合提升了1\%~2\%，MEMSA提升了2\%~3\%，性能提升不明显的主要原因是SLAKE数据量级较大，模型抽取的特征相对完备，
+采用MEMSA模型，综合性能分别提升了21.5\%、2.5\%和10\%。在SLAKE数据集上，MEMBA综合提升了1\%到2\%，MEMSA提升了2\%到3\%，性能提升不明显的主要原因是SLAKE数据量级较大，模型抽取的特征相对完备，
 单一或简单编码器组合也能取得良好的性能，就会会导致针对小样本情况下设计的MEMSA带来的性能提升不明显。综上，通过采用具有不同功能的多编码器混合以及跨模态自注意力方法，MEMSA可以通过提升特征的多样化表示，在开放式问题下获得更好的性能效果，
 从而提升模型整体的问答性能。
 % \subsection{消融实验：使用不同编码器对比分析}
@@ -304,13 +299,13 @@ $L_{vqa}$是基于分类的答案预测和标签之间的交叉熵损失；$L_{r
 		\hline Methods & Open & Closed & ALL & Open & Closed & ALL\\
 		\hline MVEF-SAN\cite{nguyen2019overcoming} & $40.7 \%$ & $74.1 \%$ & $60.8 \%$ & $72.9 \&$ & $77.6 \%$ & $74.7 \%$\\
 		MVEF-BAN\cite{nguyen2019overcoming} & $43.9 \%$ & $75.1 \%$ & $62.6 \%$ & $75.0 \%$ & $76.4 \%$ & $75.6 \%$\\
-		MVEF-CMSA & $43.9 \%$ & $75.1 \%$ & $62.6 \%$ & $75.8 \%$ & $81.5\%$ & $78.0\%$\\
+		MVEF-CMSA & $61.5 \%$ & $78.7 \%$ & $71.8 \%$ & $75.8 \%$ & $81.5 \%$ & $78.0 \%$\\
 		\hline MTPT-SAN & $43.0 \%$ & $72.8 \%$ & $61.0 \%$ & X & X & X\\
 		MTPT-BAN\cite{gong2021cross} & $56.1 \%$ & $75.7 \%$ & $67.9 \%$ & X & X & X\\
 		MTPT-CMSA\cite{gong2021cross} & $56.1 \%$ & $77.3 \%$ & $68.8 \%$ & X & X & X\\
 		\hline MEM-SAN & $53.6 \%$ & $75.7 \%$ & $67.0 \%$ & $74.9 \%$ & $82.0 \%$ & $77.7 \%$\\
 		MEM-BAN & $52.0 \%$ & $78.0 \%$ & $68.3 \%$ & $\mathbf{76.3} \%$ & $78.6 \%$ & $77.2 \%$\\
-		MEMSA & $\mathbf{65.4 \%}$ & $77.6 \%$ & $\mathbf{72.7 \%}$ & $76.0 \%$ & $81.7 \%$ & $\mathbf{78.2 \%}$\\
+		MEMSA（ours） & $\mathbf{65.4 \%}$ & $77.6 \%$ & $\mathbf{72.7 \%}$ & $76.0 \%$ & $81.7 \%$ & $\mathbf{78.2 \%}$\\
 		\hline
 		\end{tabular}
 \end{table}
@@ -319,19 +314,17 @@ $L_{vqa}$是基于分类的答案预测和标签之间的交叉熵损失；$L_{r
 并且发现编码器多样性越高，跨模态自注意力机制的效果就越明显，这充分说明了自注意力在跨模态或者多模态信息的建模上具有独特的优势。
 
 并且通过三类编码方案综合对比，多编码器混合方式对于各种注意力融合机制具有最佳的适配性，在SAN、BAN等传统方法上都可以大幅度提升性能。
-在数据量较大，基准准确率较高的SLAKE数据集上，模型的综合性能也得到了小幅度提升。
+在数据量较大，数据集基准准确率已较高的SLAKE数据集上，模型的综合性能也得到了小幅度提升。
 
 \subsection{实验总结}
-综合上述实验，在使用不同的编码方式时，具有不同作用的多编码器可以提高模型的表征能力，提高模型的分类准确率；
-
-我们知道，向量之间的主要运算有cat，sum，mul等形式。受空间约束和相关性的影响，属于不同模态，代表不同意义的向量之间无法直接产生有效的运算形式。
+综合上述实验，在使用不同的编码方式时，具有不同作用的多编码器可以提高模型的表征能力，提高模型的分类准确率。由于向量之间的主要运算有拼接、求和、点乘等形式。受空间约束和相关性的影响，属于不同模态，代表不同意义的向量之间无法直接产生有效的运算形式。
 如果不经过坐标变换，映射，归一化等操作再运算的话则会导致严重的信息丢失。可以预见，在神经网络中，直接拼接组合是相比于运算更为有利的信息融合方式。
 因为维度代表一种信息的尺度，在编码时，每增加一个维度就会带来这个信息新的“描述”，从而提升了这个信息的表达能力和空间上的可区分度。
 值得注意的是，不同的编码器在编码同一信息时难免会产生冗余，比如描述的向量空间中的某些分量是呈现线性相关的。这时侯就会引入重复的信息和增大特征维度
 给模型设计和计算资源带来难题。
 
-而且相比于传统的特征处理方式，基于注意力是一种更为灵活，高效，而且可以由神经网络自发的学习和选择不同模态中的有效特征的一种
-多模态融合方式。为了解决不同模态编码信息维度之间有效匹配的问题本文采取了词汇级细粒度表征的跨模态自注意力的方法，
+而且相比于传统的特征处理方式，基于注意力是一种更为灵活，高效，而且可以由神经网络自发的学习和选择不同模态中的有效特征的一种多模态融合方式。
+为了解决不同模态编码信息维度之间有效匹配的问题本文采取了词汇级细粒度表征的跨模态自注意力的方法，
 跨模态自注意力通过计算不同模态信息之间的匹配程度得到这些信息维度的重要性权值用于筛选出真正有效（线性无关）的特征信息，
 从而实现更高效地捕获不同模态间的联系以及和自身的上下文关联。
 
@@ -339,7 +332,7 @@ $L_{vqa}$是基于分类的答案预测和标签之间的交叉熵损失；$L_{r
 为了更加深入地了解多模态混合自注意力网络的机制，理解其提升医学视觉问答效果的途径和原理，本小节将继续讨论MEMSA网络具体回答Med-RAD数据集中某一类问题的能力，同时对MEMSA网络的分类预测
 能力进行综合评估，最后通过问答样例对比直观地感受MEMSA网络在回答医学视觉问题时的实际效果。
 \subsection{按问题类型划分的准确率比较}
-除上述表\ref{tab:modal_red_cmp1,tab:modal_red_cmp2}中针对回答方式（OPEN，CLOSE）的划分外，还可以针对不同的提问内容（如提问计数、颜色、尺寸、模态等）进行问答划分，分析
+除表\ref{tab:modal_red_cmp1}和表\ref{tab:modal_red_cmp2}中针对回答方式（OPEN，CLOSE）的划分外，还可以针对不同的提问内容（如提问计数、颜色、尺寸、模态等）进行问答划分，分析
 Med-VQA模型在不同内容提问下的准确率。
 用Med-RAD数据集进行模型性能测试，其在开放式问答和封闭式问答中针对具体的回答内容的分类性能分别如表\ref{tab:qt-close-end}和表\ref{tab:qt-open-end}，
 \begin{table}
@@ -347,7 +340,7 @@ Med-VQA模型在不同内容提问下的准确率。
 	\centering
 	\small % 调整表格字号
 	\begin{tabular}{l|lllll|lllll} %右边补MVEF-BAN的性能
-		\hline Model & \multicolumn{5}{l}{\textbf{MEMSA}} & \multicolumn{5}{|l}{\textbf{MVEF-BAN}（base）} \\ 
+		\hline Model & \multicolumn{5}{l}{\textbf{MEMSA（ours）}} & \multicolumn{5}{|l}{\textbf{MVEF-BAN}（base）} \\ 
 		\hline QA-type & count & real & TRUE & real \% & score \% & count & real & TRUE & real \% & score \%\\ 
 		\hline COUNT & 4 & 4 & 3 & 100 \%& 75 \%& 4 & 4 & 3 & 100 \%& 75 \%\\
 		COLOR & 4 & 4 & 4 & 100 \%& 100 \%& 4 & 4 & 4 & 100 \%& 100 \%\\
@@ -369,7 +362,7 @@ Med-VQA模型在不同内容提问下的准确率。
 	\centering
 	\small % 调整表格字号
 	\begin{tabular}{l|lllll|lllll}
-		\hline Model & \multicolumn{5}{|l}{\textbf{MEMSA}} & \multicolumn{5}{|l}{\textbf{MVEF-BAN}（base）} \\ 
+		\hline Model & \multicolumn{5}{|l}{\textbf{MEMSA（ours）}} & \multicolumn{5}{|l}{\textbf{MVEF-BAN}（base）} \\ 
 		\hline QA-type & count & real & TRUE & real \% & score \% & count & real & TRUE & real \% & score \%\\
 		\hline COUNT & 2 & 2 & 2 & 100 \%& 100 \%& 2 & 2 & 2 & 100 \%& 100\%\\
 		COLOR & 0 & 0 & 0 & 0 \%& 0 \%& 0 & 0 & 0 & 0 \%& 0\%\ \\
@@ -387,12 +380,15 @@ Med-VQA模型在不同内容提问下的准确率。
 \end{table}
 
 可见，MEMSA模型的性能提升主要来自于其能够更好回答开放式问答和封闭式问答中有关PRES、PLANE、MODALITY、POS这几类数据集占比较大的问题。
+
 \subsection{MEMSA模型综合评估}
 建立模型预测的混淆矩阵是综合评价一个模型分类性能的有效方法，对于一个分类模型，可以建立一个类别数为N的混淆矩阵，行表示预测标签，列表示真实标签。
 矩阵中的每个元素表示真实标签和预测标签的组合，即在真实标签为该行所表示的标签时，模型预测为该列所表示的标签的样本数量。在非生成式视觉问答场景中，
 封闭式问答为归为一个二分类问题，开放式问答可以归为一个多分类问题，Li-Ming Zhan等人给模型增加了一个即插即用的QCR和TCR模块\cite{zhan2020medical}用于问题分类，
-并解释了将问题按照类型进行事先划分可以更好地提高模型问答的准确率。通过观察混淆矩阵\ref{close_confusionmatrix}和\ref{open_confusionmatrix}，
-可以直观地了解模型的对各问题的分类情况，例如哪些类别容易被混淆、哪些类别分类效果较好等，进而对模型进行优化。
+并解释了将问题按照类型进行事先划分可以更好地提高模型问答的准确率。通过观察简化混淆矩阵图\ref{close_confusionmatrix}和图\ref{open_confusionmatrix}，
+对于封闭式问题，通过观察反斜对角线，MEMSA模型有较大的TP和TN值以及较小的FP和FN值，说明该模型可以很好地解决二分类问题。对于开放式问题，可以发现横坐标绝大部分预测标签在反斜对角线上（预测值等于真实值）取得最大值，
+说明该类标签涉及的问题具有很好的分类效果，当然，也存在某些类别的最大值不在反斜对角线上，说明这些标签类别容易被模型混淆，预测时要着重注意。
+所以总的来说，建立混淆矩阵可以直观地了解MEMSA模型的对各问题的分类情况，例如哪些类别容易被混淆、哪些类别分类效果较好等，进而对模型进行优化。
 % \begin{figure}
 % 	% 居中
 % 	\centering	
@@ -415,7 +411,7 @@ Med-VQA模型在不同内容提问下的准确率。
 	\begin{minipage}{0.5\linewidth}
 		\centering	
 		% 包含当前路径下的Fig文件夹的图片文件
-		\includegraphics[width=1.1\textwidth]{Fig/myfig/chapter3/close_confusionmatrix.png}  %scale = 0.3
+		\includegraphics[width=1.2\textwidth]{Fig/myfig/chapter3/close_confusionmatrix.png}  %scale = 0.3
 		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
 		\caption{\label{close_confusionmatrix}封闭式问答混淆矩阵} 	
 	\end{minipage}
@@ -423,7 +419,7 @@ Med-VQA模型在不同内容提问下的准确率。
 	\begin{minipage}{0.5\linewidth}
 		\centering	
 		% 包含当前路径下的Fig文件夹的图片文件
-		\includegraphics[width=1.1\textwidth]{Fig/myfig/chapter3/open_confusionmatrix.png}  %scale = 0.3
+		\includegraphics[width=1.2\textwidth]{Fig/myfig/chapter3/open_confusionmatrix.png}  %scale = 0.3
 		% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
 		\caption{\label{open_confusionmatrix}开放式问答混淆矩阵} 	
 	\end{minipage}	
@@ -434,60 +430,62 @@ Med-VQA模型在不同内容提问下的准确率。
 	\centering
 	\small
 	\begin{tabular}{c|cccccc}
-		\hline  方法 & TP（sum） & TN（sum） & FP（sum） & Precision（avg） & Recall（avg） & F1（avg） \\
+		\hline  方法 & TP（sum） & TN（sum） & FP（sum） & Precision（micro） & Recall（micro） & F1（micro） \\
 		\hline MVEF-BAN & 290 & 73 & 73 & 0.658 & 0.643 & 0.644 \\
 		CPAE-BAN & 282 & 72 & 72 & 0.671 & 0.625 & 0.637 \\
 		MTPT-CMSA & 296 & 89 & 89 & 0.648 & 0.656 & 0.645 \\
-		MEMSA & 309 & 73 & 73 & 0.685 & 0.685 & $\mathbf{0.678}$ \\
+		MEMSA（ours） & 309 & 73 & 73 & 0.685 & 0.685 & $\mathbf{0.678}$ \\
 		\hline
 		\end{tabular}
 \end{table}
 
-对于分类检索式问答来说，准确率如表\ref{tab:modal_red_cmp}代表了模型分类到正确的答案占总样本数的比例，它反映了模型整体的分类性能也是最重要的指标；
+对于分类检索式问答来说，准确率如表\ref{tab:modal_red_cmp1}代表了模型分类到正确的答案占总样本数的比例，它反映了模型整体的分类性能也是最重要的指标；
 关于表\ref{tab:confusionmatrix}，精确率表示模型在预测为正例的样本中真正为正例的样本数占预测为正例的样本数的比例，它反映了模型在预测为正例的样本中的准确程度，
 从表中可得知，MEMSA模型具有最大的Precision值，相较于主流模型具有比较优秀的精度，可以充分保证回答的质量；
 召回率是指模型在所有真正的正例样本中预测为正例的样本数占所有真正的正例样本数的比例，它反映了模型在发现真正的正例样本方面的能力。
 同样，MEMSA也具有最大的Recall值，在问答时尽可能地预测出所有正确的回答。F1分数是精确率和召回率的调和平均数，它综合了精确率和召回率的优缺点，
-用于综合评价模型的性能，综合来看MEMSA具有最高的F1分数，说明MEMSA相较其他主流模型存在优势。
-\begin{figure}[htbp]
-	% 图片居中（列居中对齐）
-	\centering	
-	% 包含当前路径下的Fig文件夹的图片文件
-	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter3/all_roc.png}  %scale = 0.3
-	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-	\caption{\label{all_roc}封闭式问答模型ROC曲线} 
-\end{figure}
+用于综合评价模型的性能，综合来看MEMSA具有最高的F1分数，说明MEMSA相较其他主流模型存在一定的优势。
 
-% \subsection{编码器隐变量表征分析}
-% 图像在网络中的表征往往用隐变量来表示，分析三个编码器是如何达到降噪、减小样本使用、获得更多表征能力的。
+% \begin{figure}[htbp]
+% 	% 图片居中（列居中对齐）
+% 	\centering	
+% 	% 包含当前路径下的Fig文件夹的图片文件
+% 	\includegraphics[width=0.6\textwidth]{Fig/myfig/chapter3/all_roc.png}  %scale = 0.3
+% 	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
+% 	\caption{\label{all_roc}封闭式问答模型ROC曲线} 
+% \end{figure}
 
-% \subsection{信号扰动实验}
-从图\ref{all_roc}可以看出，对于回答封闭式这一二元分类问题，在模型默认的绝对分类阈值以及分类方式下，模型AUC值达到0.88，说明MEMSA模型在回答二分类问题时具有较强的泛化能力。
-由于开放式问答（多标签分类问题）的ROC曲线不具有显著的实际意义，故本文在此不做详细讨论。
+% % \subsection{编码器隐变量表征分析}
+% % 图像在网络中的表征往往用隐变量来表示，分析三个编码器是如何达到降噪、减小样本使用、获得更多表征能力的。
+
+% % \subsection{信号扰动实验}
+% 从图\ref{all_roc}可以看出，对于回答封闭式这一二元分类问题，在模型默认的绝对分类阈值以及分类方式下，模型AUC值达到0.88，说明MEMSA模型在回答二分类问题时具有较强的泛化能力。
+% 由于开放式问答（多标签分类问题）的ROC曲线不具有显著的实际意义，故本文在此不做详细讨论。
 
 \subsection{MEMSA实例问答效果}
 为了直观地展现MEMSA在医学视觉问答上的实际效果，具体问答样例如图\ref{fig:qa_demo}，选用MEMSA和基线模型MEVF-BAN作问答对比，
 模型在做开放式问答时，MEMSA准确预测了问题出现在肺叶的右上叶（right upper lobe），相比于采用双线性池化的MVEF-BAN模型预测的不具备直接语义的回答“right upper base”
-MEMSA具有更好的细粒度语义解析能力和对语句序列的上下文进行语义建模的能力。同时，在具有多个正确答案的开放式问答图中具有什么器官中，主流模型往往倾向于回答脊髓（spinal cord）
-MEM
+MEMSA具有更好的细粒度语义解析能力和对语句序列的上下文进行语义建模的能力。同时，在具有多个正确答案的开放式问答图中具有什么器官中，主流模型往往倾向于回答脊髓（spinal cord）这一通用解
+MEMSA模型则很好地捕获了肺部的特征并预测出其存在。
 \begin{figure}[htbp]
 	% 图片居中（列居中对齐）
 	\centering	
 	% 包含当前路径下的Fig文件夹的图片文件
-	\includegraphics[width=0.8\textwidth]{Fig/myfig/chapter3/qa_demo.png}  %scale = 0.3
+	\includegraphics[width=1\textwidth]{Fig/myfig/chapter3/qa_demo.png}  %scale = 0.3
 	% 添加标签one_DFUAV以及图标题“XXX”，引用某图时使用\ref{xxx}，其中xxx就是标签，图编号是自动生成的。
-	\caption{\label{fig:qa_demo}MEMSA与MEVFBA（MAML+AE-BAN）的回复比较} 
+	\caption{\label{fig:qa_demo}MEMSA与MEVFBA（MEVF-BAN）的回复比较} 
 \end{figure}
 
 
 \section{本章小结}
-本章首先介绍了主流视觉问答网络的实现原理和总体架构，包括特征提取、特征融合和答案预测等组件。接着，根据目前主流模型的一些缺陷
-和医学视觉问答的特点，提出了多编码器混合自注意力模型MEMSA。然后在具体的实验部分介绍了使用的数据集和模型细节，实验所处的环境和实验条件。
-本章在实验中从整体性能，问答类型性能等多个角度综合对比了多编码器混合自注意力模型相比于主流模型的性能差异并对原因进行了分析，
-接着做了分解对照实验，固定编码器模型，重新分析了不同注意力模型对问答性能的影响，证明了多编码器模型在非跨模态自注意力模型的情况下也能提升部分模型性能，
-说明了正确使用多模态编码模型时的一个优越性。
+本章首先介绍了主流视觉问答网络的实现原理和总体架构，包括特征提取、特征融合和答案预测等组件。接着，根据目前主流模型的一些缺陷和医学视觉问答的特点，提出了多编码器混合自注意力模型MEMSA。
+然后在具体介绍了模型细节，实验所处的环境和实验条件。在实验中，从整体性能、问答类型性能等多个角度综合对比了多编码器混合自注意力模型相比于现主流模型的性能差异并对其原因进行了分析。
+验证了多编码器混合模型对于提升Med-VQA模型的整体问答性能具有积极作用和意义。紧接着做了分解对照实验，尝试先固定编码器模型，重新分析了不同注意力模型对问答性能的影响，验证了跨模态自注意力机制在融合各模态编码信息上的优越性。
+也侧面说明了多模态混合编码加自注意力机制这一方案的优势。
 
-
+% 增加空白页
+\newpage
+\vspace*{\fill}
 
 
 
